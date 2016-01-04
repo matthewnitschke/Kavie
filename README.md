@@ -7,6 +7,23 @@ I created Kavie when i was frusterated with the current knockout validation libr
 
 ##Usage
 
-'''javascript
-var a = "";
-'''
+```javascript
+function ViewModel(){
+  var self = this;
+
+  self.value = ko.observable("Hello").extend({
+    kavie: { required: true }
+  });
+
+  self.validator = new Kavie([
+    self.value
+  ]);
+
+  self.submit = function(){
+    if (self.validator.isValid()){
+      console.log("All good!");
+    }
+
+  }
+}
+```
