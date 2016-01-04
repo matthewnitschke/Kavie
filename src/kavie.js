@@ -58,7 +58,7 @@
       var minDateAllowed = new Date();
       minDateAllowed.setYear(minDateAllowed.getYear() - 120); // 120 is age of oldest person allowd
 
-      if (!date.isBefore(minDateAllowed)){
+      if (date.isBefore(minDateAllowed)){
         return false;
       }
 
