@@ -5,12 +5,14 @@
   }
 
   Kavie.prototype.isValid = function(){
-    var isValid = false;
+    var isValid = true;
     for(var i = 0; i < this.values.length; i ++){
       this.values[i].startValidation();
 
-      if (!isValid){
-        isValid = !(this.values[i].hasError());
+      if (isValid){
+        if (this.values[i].hasError()){
+          isValid = false;
+        }
       }
     }
     return isValid;
