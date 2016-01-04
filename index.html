@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kavie</title>
+  <script src="knockout.js"></script>
+
+  <style media="screen">
+    .validation-error{
+      outline: none;
+      border: solid 2px red;
+    }
+  </style>
+</head>
+<body>
+
+  <input type="text" data-bind="textInput: value, css:{'validation-error': value.hasError}">
+  <input type="button" data-bind="click: submit">
+
+  <script src="kavie.js"></script>
+  <script src="app.js"></script>
+
+  <script type="text/javascript">
+    run();
+  </script>
+</body>
+</html>
