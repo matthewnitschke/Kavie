@@ -27,3 +27,26 @@ function ViewModel(){
   }
 }
 ```
+
+###Adding Custom Validation Functions
+```javascript
+Kavie.validatorFunctions.customValidator = function(propVal, eleVal){
+  // propVal is the value passed in from the ko.extend()
+  // eleVal is the value being passed in from the observable
+  
+  if (eleVal == "yea!"){
+    return true;
+  } else {
+    return false
+  }
+}
+```
+
+###Pre-made Validator Functions
+Name | Properties | Notes
+-----|------------|------
+required | true/false |
+max | int |
+min | int |
+date | true/false |
+birthdate | true/false | Checks for valid date, if date is after current date, and if birthdate age is less than 120
