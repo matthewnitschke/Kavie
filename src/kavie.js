@@ -27,12 +27,19 @@
             }
         },
         max: function (propVal, eleVal) {
-            return (eleVal.length <= propVal ? true : false);
+          if (eleVal){
+            return eleVal.length <= propVal;
+          }
+          return true; // if no value is found, it doesnt have a length. So thus it is less than the propVal
         },
         min: function (propVal, eleVal) {
-            return (eleVal.length >= propVal ? true : false);
+          if (eleVal){
+            return eleVal.length >= propVal;
+          }
+          return false; // opposite from above
         },
         date: function (propVal, eleVal) {
+          if (eleVal){
             if (eleVal.length == 10) {
                 if (new Date(eleVal) == "Invalid Date") {
                     return false;
@@ -40,6 +47,8 @@
                 return true;
             }
             return false;
+          }
+          return false; // noting is an invalid date
         },
         birthdate: function (propVal, eleVal) {
             // check to see if it is a valid date
@@ -65,6 +74,8 @@
             return true;
         }
     }
+    // functions to add:
+    // numeric, regex pattern
 
 }());
 
