@@ -6,7 +6,7 @@ I created Kavie when I was frusterated with the current knockout validation libr
 
 
 ##Usage
-
+####Javascript
 ```javascript
 function ViewModel(){
   var self = this;
@@ -27,6 +27,11 @@ function ViewModel(){
   }
 }
 ```
+####Html
+```html
+<input type="text" data-bind="text: value, css:{'validation-error': hasError}/>
+```
+
 
 ###Adding Custom Validation Functions
 ```javascript
