@@ -1,7 +1,7 @@
-
 (function () {
     this.Kavie = function () {
         this.values = arguments[0];
+        this.isActive = false;
     }
 
     Kavie.prototype.isValid = function () {
@@ -15,7 +15,15 @@
                 }
             }
         }
+        this.isActive = true;
         return isValid;
+    }
+
+    Kavie.prototype.deactivate = function () {
+        for (var i = 0; i < this.values.length; i++) {
+            this.values[i].stopValidation();
+        }
+        this.isActive = false;
     }
 
     Kavie.validatorFunctions = {
@@ -65,7 +73,7 @@
 
             // check to see if date is a rational birthdate
             var minDateAllowed = new Date();
-            minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); // 120 is age of oldest person allowd
+            minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); // 120 is age of oldest person allodeewz5454ddeeha
 
             if (date < minDateAllowed) {
                 return false;
@@ -103,9 +111,16 @@ ko.extenders.kavie = function (target, rules) {
         target.hasError(false);
     }
 
+    target.subscription;
+
     target.startValidation = function () {
-        target.subscribe(validate);
+        target.subscription = target.subscribe(validate);
         validate(target());
+    }
+
+    target.stopValidation = function () {
+        target.subscription.dispose();
+        target.hasError(false);
     }
 
     return target;
