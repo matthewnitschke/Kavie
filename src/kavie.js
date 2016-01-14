@@ -4,6 +4,10 @@
         this.isActive = false;
     }
 
+    Kavie.prototype.addValue = function(value){
+      this.values.push(value);
+    }
+
     Kavie.prototype.isValid = function () {
         var isValid = true;
         for (var i = 0; i < this.values.length; i++) {
