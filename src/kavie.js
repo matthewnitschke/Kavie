@@ -13,7 +13,7 @@
         for (var i = 0; i < this.values.length; i++) {
             if (this.isKavieObservable(this.values[i])){
                 this.values[i].startValidation();
-    
+
                 if (isValid) {
                     if (this.values[i].hasError()) {
                         isValid = false;
@@ -24,7 +24,7 @@
         this.isActive = true;
         return isValid;
     }
-    
+
     Kavie.prototype.isKavieObservable = function(observable){
       if (observable.hasError == null){
         return false;
@@ -47,6 +47,14 @@
             } else {
                 return true;
             }
+        },
+        numeric: function(propVal, eleVal){
+          if (propVal){
+             return !isNaN(parseFloat(eleVal)) && isFinite(eleVal);
+          } else {
+            return true;
+          }
+
         },
         max: function (propVal, eleVal) {
           if (eleVal){

@@ -42,6 +42,11 @@
     <input type="text" data-bind="textInput: birthdateValue, css:{'validation-error': birthdateValue.hasError}">
   </div>
 
+  <div class="block">
+    Numerical Value:<br>
+    <input type="text" data-bind="textInput: numericalValue, css:{'validation-error': numericalValue.hasError}">
+  </div>
+
 
   <input type="button" data-bind="click: submit" value="Validate">
 
