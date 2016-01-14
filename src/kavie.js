@@ -7,16 +7,26 @@
     Kavie.prototype.isValid = function () {
         var isValid = true;
         for (var i = 0; i < this.values.length; i++) {
-            this.values[i].startValidation();
-
-            if (isValid) {
-                if (this.values[i].hasError()) {
-                    isValid = false;
+            if (this.isKavieObservable(this.values[i])){
+                this.values[i].startValidation();
+    
+                if (isValid) {
+                    if (this.values[i].hasError()) {
+                        isValid = false;
+                    }
                 }
             }
         }
         this.isActive = true;
         return isValid;
+    }
+    
+    Kavie.prototype.isKavieObservable = function(observable){
+      if (observable.hasError == null){
+        return false;
+      } else {
+        return true;
+      }
     }
 
     Kavie.prototype.deactivate = function () {
