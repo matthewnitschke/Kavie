@@ -8,7 +8,7 @@
       this.values.push(value);
     }
 
-    Kavie.prototype.isValid = function () {
+    Kavie.prototype.isValid = function (otherValidators) {
         var isValid = true;
         for (var i = 0; i < this.values.length; i++) {
             if (this.isKavieObservable(this.values[i])){
@@ -21,6 +21,19 @@
                 }
             }
         }
+
+        if (otherValidators){
+          for(var i = 0; i < otherValidators.length; i ++){
+            var otherValidatorIsValid = otherValidators[i].isValid();
+
+            if (isValid) {
+                if (!otherValidatorIsValid) {
+                    isValid = false;
+                }
+            }
+          }
+        }
+
         this.isActive = true;
         return isValid;
     }

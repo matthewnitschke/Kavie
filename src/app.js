@@ -22,8 +22,12 @@ function ViewModel(){
   });
 
   self.validator = new Kavie([
-    self.requiredValue, self.maxValue, self.minValue, self.dateValue, self.birthdateValue
+    self.requiredValue, self.maxValue, self.minValue
   ]);
+
+  self.validatorTwo = new Kavie([
+    self.dateValue, self.birthdateValue
+  ])
 
 
   self.numericalValue = ko.observable().extend({
@@ -34,7 +38,7 @@ function ViewModel(){
   self.validator.addValue(self.numericalValue);
 
   self.submit = function(){
-    if (self.validator.isValid()){
+    if (self.validator.isValid([self.validatorTwo])){
       console.log("All good!");
     }
   }
