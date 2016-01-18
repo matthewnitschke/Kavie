@@ -17,28 +17,22 @@
 
     Kavie.prototype.isValid = function (otherValidators) {
         var isValid = true;
-        for (var i = 0; i < this.values.length; i++) {
-            if (this.isKavieObservable(this.values[i])){
-                this.values[i].startValidation();
+
+        var observables = this.values;
+        for(var i = 0; i < otherValidators.length; i ++){
+          observables = observables.concat(otherValidators[i].values);
+        }
+
+        for (var i = 0; i < observables.length; i++) {
+            if (this.isKavieObservable(observables[i])){
+                observables[i].startValidation();
 
                 if (isValid) {
-                    if (this.values[i].hasError()) {
+                    if (observables[i].hasError()) {
                         isValid = false;
                     }
                 }
             }
-        }
-
-        if (otherValidators){
-          for(var i = 0; i < otherValidators.length; i ++){
-            var otherValidatorIsValid = otherValidators[i].isValid();
-
-            if (isValid) {
-                if (!otherValidatorIsValid) {
-                    isValid = false;
-                }
-            }
-          }
         }
 
         this.isActive = true;
@@ -46,10 +40,10 @@
     }
 
     Kavie.prototype.isKavieObservable = function(observable){
-      if (observable.hasError == null){ // when you extend an observable with kavie, it addes hasError.
-        return false;
-      } else {
+      if (observable.hasError !== null){ // when you extend an observable with kavie, it addes hasError.
         return true;
+      } else {
+        return false;
       }
     }
 
