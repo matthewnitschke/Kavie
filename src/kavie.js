@@ -1,3 +1,10 @@
+/*
+ * Kavie - knockout observable validator
+ * Matthew Nitschke - http://pyrtio.com/
+ * License: MIT (http://www.opensource.org/licenses/mit-license.php)
+ */
+
+
 (function () {
     this.Kavie = function () {
         this.values = arguments[0];
