@@ -47,6 +47,11 @@
     <input type="text" data-bind="textInput: numericalValue, css:{'validation-error': numericalValue.hasError}">
   </div>
 
+  <div class="block">
+    Regex Pattern Value (this pattern: words with upper case letters):<br>
+    <input type="text" data-bind="textInput: regexPatternValue, css:{'validation-error': regexPatternValue.hasError}">
+  </div>
+
 
   <input type="button" data-bind="click: submit" value="Validate">
 

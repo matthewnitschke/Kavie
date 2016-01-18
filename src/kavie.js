@@ -46,7 +46,7 @@
     }
 
     Kavie.prototype.isKavieObservable = function(observable){
-      if (observable.hasError == null){
+      if (observable.hasError == null){ // when you extend an observable with kavie, it addes hasError.
         return false;
       } else {
         return true;
@@ -122,11 +122,15 @@
             }
 
             return true;
+        },
+        regexPattern: function(propVal, eleVal){
+          if (eleVal){
+            return eleVal.toString().match(propVal) !== null;
+          } else {
+            return false;
+          }
         }
     }
-    // functions to add:
-    // numeric, regex pattern
-
 }());
 
 

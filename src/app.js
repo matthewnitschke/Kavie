@@ -21,12 +21,16 @@ function ViewModel(){
     kavie: { birthdate: true }
   });
 
+  self.regexPatternValue = ko.observable().extend({
+    kavie: { regexPattern: /([A-Z])\w+/ }
+  });
+
   self.validator = new Kavie([
     self.requiredValue, self.maxValue, self.minValue
   ]);
 
   self.validatorTwo = new Kavie([
-    self.dateValue, self.birthdateValue
+    self.dateValue, self.birthdateValue, self.regexPatternValue
   ])
 
 
