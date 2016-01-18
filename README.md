@@ -68,3 +68,4 @@ min | int |
 date | true/false |
 birthdate | true/false | Checks for valid date, if date is after current date, and if birthdate age is less than 120
 numeric | true/false | Is input fully numeric
+regexPattern | regex | matches a regex pattern
