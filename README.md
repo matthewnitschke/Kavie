@@ -29,7 +29,7 @@ function ViewModel(){
 ```
 ####Html
 ```html
-<input type="text" data-bind="text: value, css:{'validation-error': hasError}/>
+<input type="text" data-bind="textInput: value, css:{'validation-error': value.hasError}/>
 ```
 
 ##Methods
