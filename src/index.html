@@ -22,36 +22,6 @@
     <input type="text" data-bind="textInput: requiredValue, css:{'validation-error': requiredValue.hasError}">
   </div>
 
-  <div class="block">
-    Max 5 characters:<br>
-    <input type="text" data-bind="textInput: maxValue, css:{'validation-error': maxValue.hasError}">
-  </div>
-
-  <div class="block">
-    Min 2 characters:<br>
-    <input type="text" data-bind="textInput: minValue, css:{'validation-error': minValue.hasError}">
-  </div>
-
-  <div class="block">
-    Valid Date:<br>
-    <input type="text" data-bind="textInput: dateValue, css:{'validation-error': dateValue.hasError}">
-  </div>
-
-  <div class="block">
-    Valid Birthdate (Date is in the past, and person is under 120 years old):<br>
-    <input type="text" data-bind="textInput: birthdateValue, css:{'validation-error': birthdateValue.hasError}">
-  </div>
-
-  <div class="block">
-    Numerical Value:<br>
-    <input type="text" data-bind="textInput: numericalValue, css:{'validation-error': numericalValue.hasError}">
-  </div>
-
-  <div class="block">
-    Regex Pattern Value (this pattern: words with upper case letters):<br>
-    <input type="text" data-bind="textInput: regexPatternValue, css:{'validation-error': regexPatternValue.hasError}">
-  </div>
-
 
   <input type="button" data-bind="click: submit" value="Validate">
 
