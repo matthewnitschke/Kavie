@@ -2,47 +2,11 @@ function ViewModel(){
   var self = this;
 
   self.requiredValue = ko.observable().extend({
-    kavie: { required: true }
+    kavie: { required: true, addToArray: true }
   });
-
-  self.maxValue = ko.observable().extend({
-    kavie: { max: 5 }
-  });
-
-  self.minValue = ko.observable().extend({
-    kavie: { min: 2 }
-  });
-
-  self.dateValue = ko.observable().extend({
-    kavie: { date: true }
-  });
-
-  self.birthdateValue = ko.observable().extend({
-    kavie: { birthdate: true }
-  });
-
-  self.regexPatternValue = ko.observable().extend({
-    kavie: { regexPattern: /([A-Z])\w+/ }
-  });
-
-  self.validator = new Kavie([
-    self.requiredValue, self.maxValue, self.minValue
-  ]);
-
-  self.validatorTwo = new Kavie([
-    self.dateValue, self.birthdateValue, self.regexPatternValue
-  ])
-
-
-  self.numericalValue = ko.observable().extend({
-    kavie:{
-      numeric: true
-    }})
-
-  self.validator.addValue(self.numericalValue);
 
   self.submit = function(){
-    if (self.validator.isValid([self.validatorTwo])){
+    if (Kavie.isValid()){
       console.log("All good!");
     }
   }
