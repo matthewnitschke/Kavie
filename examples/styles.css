@@ -1,0 +1,8 @@
+.validation-error{
+  outline: none;
+  border: solid 2px red;
+}
+
+.block {
+  margin:1rem;
+}
