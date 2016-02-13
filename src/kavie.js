@@ -4,12 +4,23 @@
  * License: MIT (http://www.opensource.org/licenses/mit-license.php)
  */
 
+
 ko.extenders.kavie = function (target, rules) {
     target.hasError = ko.observable();
 
     if (rules.addToArray){
       Kavie.add(target);
       delete rules.addToArray;
+    }
+
+    if (rules.section){
+      if (!Kavie.sections[rules.section]){
+        Kavie.sections[rules.section] = [];
+      }
+
+      Kavie.sections[rules.section].push(target);
+
+      delete rules.section;
     }
 
     target.rules = rules;
@@ -50,6 +61,7 @@ ko.extenders.kavie = function (target, rules) {
 
 var Kavie = function(){}
 Kavie.observables = [];
+Kavie.sections = [];
 
 Kavie.isKavieObservable = function(observable){
   if (observable.hasOwnProperty("hasError")){ // when you extend an observable with kavie, it addes hasError.
@@ -65,10 +77,9 @@ Kavie.add = function(obs){
   }
 }
 
-Kavie.isValid = function(vm){
-  var isValid = true;
-
+Kavie.compileObservables = function(vm){
   var kavieObservables = [];
+
   if (this.observables.length > 0){
     kavieObservables = kavieObservables.concat(this.observables);
   }
@@ -80,6 +91,13 @@ Kavie.isValid = function(vm){
       }
     }
   }
+  return kavieObservables;
+}
+
+Kavie.isValid = function(vm){
+  var isValid = true;
+
+  var kavieObservables = Kavie.compileObservables(vm);
 
   for(var i = 0; i < kavieObservables.length; i ++){
     kavieObservables[i].startValidation();
@@ -94,12 +112,11 @@ Kavie.isValid = function(vm){
 }
 
 Kavie.deactivate = function(vm){
-  var keys = Object.keys(vm);
-  for(var i = 0; i < keys.length; i ++){
-    var key = vm[keys[i]];
-    if (this.isKavieObservable(key)){
-      key.stopValidation();
-    }
+
+  var kavieObservables = Kavie.compileObservables(vm);
+
+  for(var i = 0; i < kavieObservables.length; i ++){
+    kavieObservables[i].stopValidation();
   }
 }
 
