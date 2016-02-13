@@ -2,7 +2,9 @@
 Insanly Basic Knockout validation
 
 
-I created Kavie when I was frusterated with the current knockout validation libraries
+##Why Kavie?
+Kavie is small (minified ~2kb), easy to use, and it works
+
 
 ## Documentation
 http://pyrtio.com/opensource/kavie
