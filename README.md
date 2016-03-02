@@ -1,9 +1,16 @@
 ![kavie-banner](https://cloud.githubusercontent.com/assets/6363089/13166491/cafa75c2-d685-11e5-8be8-3f878a9454f7.png)
 
-##Why Kavie?
+## Why Kavie?
 Kavie is small (minified ~2kb), easy to use, and it works
 
-## Basic Usage
+## Installation
+Kavie is pretty simple to install. Knockoutjs is the only dependency
+```html
+<script src="/path/to/knockout.js"></script>
+<script src="/path/to/kavie.js"></script>
+```
+
+# Usage
 
 ```javascript
 function ViewModel(){
@@ -22,7 +29,7 @@ function ViewModel(){
   }
 }
 ```
-
+## Html Side
 Kavie works by adding a hasError variable to the observable. This gives the flexibility to add color changing to any element you want
 
 ```html
@@ -30,6 +37,7 @@ Kavie works by adding a hasError variable to the observable. This gives the flex
 <span data-bind="visible: value.hasError">Uh Oh! There was an error!</span>
 ```
 
+#Validation rules
 There are a few validation rules build in
 
 ```javascript
@@ -46,7 +54,8 @@ self.value = ko.observable().extend({
 });
 ```
 
-But, if you need to add a custom one, you can do that too
+##Custom Rules
+Custom rules are added as follows
 
 ```javascript
 Kavie.validatorFunctions.isYea = function(propVal, eleVal){
@@ -61,6 +70,7 @@ Kavie.validatorFunctions.isYea = function(propVal, eleVal){
 }
 ```
 
+#Validation methods
 You can specify observables to validate a few different ways
 
 ```javascript
@@ -83,7 +93,8 @@ self.value = ko.observable().extend({
 });
 ```
 
-If you need to validate in different sections, Kavie can do that too
+#Sections
+Sections in kavie are ways to validate different parts of a view model.
 
 ```javascript
 self.value = ko.observable().extend({
@@ -104,9 +115,13 @@ self.isValid(Kavie.sections["basicInfo"]); // validate the first section
 self.isValid(Kavie.sections["otherInfo"]); // validate the second section
 ```
 
+#Deactivate
 You can also deactivate kavie after isValid()
 
 ```javascript
 Kavie.deactivate(self); // will deactivate the entire viewModel
 Kavie.deactivate(Kavie.sections["basicInfo"]) // will deactivate just the basicInfo section
 ```
+
+#Problems?
+Thanks of taking a look at kavie. If you have any problems let me know and I would love to help you out
