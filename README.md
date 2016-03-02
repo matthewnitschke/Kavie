@@ -4,7 +4,7 @@
 Kavie is small (minified ~2kb), easy to use, and it works
 
 ## Installation
-Kavie is pretty simple to install. Knockoutjs is the only dependency
+Installation is pretty simple. Knockoutjs is the only dependency. 
 ```html
 <script src="/path/to/knockout.js"></script>
 <script src="/path/to/kavie.js"></script>
