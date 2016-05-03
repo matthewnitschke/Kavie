@@ -20,6 +20,9 @@
   },
   "homepage": "https://github.com/mattNit/Kavie#readme",
   "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.5.3",
     "knockout": "^3.4.0"
   }
 }
