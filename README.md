@@ -9,7 +9,7 @@ Simply install from npm
 npm install kavie
 ```
 
-Installation is pretty simple. Knockoutjs is the only dependency.
+Then just add it to your project. Knockoutjs is the only dependency.
 ```html
 <script src="/path/to/knockout.js"></script>
 <script src="node_modules/kavie/dist/kavie.js"></script>
