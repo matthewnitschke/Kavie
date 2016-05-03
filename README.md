@@ -4,6 +4,7 @@
 Kavie is small (minified ~2kb), easy to use, and it works
 
 ## Installation
+Simply install from npm
 ```
 npm install kavie
 ```
