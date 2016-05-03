@@ -1,6 +1,6 @@
 /*
  * Kavie - knockout observable validator
- * Matthew Nitschke - http://pyrtio.com/
+ * Author: Matthew Nitschke
  * License: MIT (http://www.opensource.org/licenses/mit-license.php)
  */
 
