@@ -7,13 +7,13 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prod": "gulp scripts"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mattNit/Kavie.git"
   },
-  "author": "",
+  "author": "Matthew Nitschke",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/mattNit/Kavie/issues"
@@ -22,6 +22,7 @@
   "dependencies": {
     "gulp": "^3.9.1",
     "gulp-rename": "^1.2.2",
+    "gulp-strip-comments": "^2.4.3",
     "gulp-uglify": "^1.5.3",
     "knockout": "^3.4.0"
   }

@@ -4,19 +4,14 @@
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
 */
 
-// This is the knockout js extender
-// simply adds a few things to the observable so we can access these from the kavie object
 ko.extenders.kavie = function (target, rules) {
-    target.hasError = ko.observable(); // tracks whether this observable is valid or not
+    target.hasError = ko.observable(); 
 
-    // if contains addToArray, add this observable to the global Kavie object
-    // (not sure if i like this)
     if (rules.addToArray){
       Kavie.add(target);
       delete rules.addToArray;
     }
 
-    // if section exsists add observable to it
     if (rules.section){
       if (!Kavie.sections[rules.section]){
         Kavie.sections[rules.section] = [];
@@ -27,10 +22,8 @@ ko.extenders.kavie = function (target, rules) {
       delete rules.section;
     }
 
-    // add the passed in rules to the observable
     target.rules = rules;
 
-    // Simply checks each rule attached to this observable and changes hasError variable
     function validate(newValue) {
         var rules = target.rules;
 
@@ -51,7 +44,7 @@ ko.extenders.kavie = function (target, rules) {
 
 
     target.startValidation = function () {
-        target.subscription = target.subscribe(validate); // creates a subscribable to update when value changes
+        target.subscription = target.subscribe(validate); 
         validate(target());
     }
 
@@ -64,28 +57,24 @@ ko.extenders.kavie = function (target, rules) {
 };
 
 
-var Kavie = function(){} // the global kavie object
+var Kavie = function(){} 
 Kavie.observables = [];
 Kavie.sections = [];
 
-// a simple helper function to check if observables have been extended with the kavie extender
 Kavie.isKavieObservable = function(observable){
-  if (observable.hasOwnProperty("hasError")){ // when you extend an observable with kavie, it addes hasError.
+  if (observable.hasOwnProperty("hasError")){ 
     return true;
   } else {
     return false;
   }
 }
 
-// adds a kavie observable to the global kavie object
 Kavie.add = function(obs){
   if (this.isKavieObservable(obs)){
     this.observables = this.observables.concat(obs);
   }
 }
 
-// returs a list of all the kavie observables
-// pulls from the global object, and a viewModel or section that can be passed in
 Kavie.compileObservables = function(vm){
   var kavieObservables = [];
 
@@ -103,7 +92,6 @@ Kavie.compileObservables = function(vm){
   return kavieObservables;
 }
 
-// the main is valid function run to see if observables are valid
 Kavie.isValid = function(vm){
   var isValid = true;
 
@@ -121,7 +109,6 @@ Kavie.isValid = function(vm){
   return isValid;
 }
 
-// simply deactivates all observables
 Kavie.deactivate = function(vm){
   var kavieObservables = Kavie.compileObservables(vm);
 
@@ -130,7 +117,6 @@ Kavie.deactivate = function(vm){
   }
 }
 
-// built in validator functions
 Kavie.validatorFunctions = {
     required: function (propVal, eleVal) {
         if (propVal) {
@@ -151,13 +137,13 @@ Kavie.validatorFunctions = {
       if (eleVal){
         return eleVal.length <= propVal;
       }
-      return true; // if no value is found, it doesnt have a length. So thus it is less than the propVal
+      return true; 
     },
     min: function (propVal, eleVal) {
       if (eleVal){
         return eleVal.length >= propVal;
       }
-      return false; // opposite from above
+      return false; 
     },
     date: function (propVal, eleVal) {
       if (eleVal){
@@ -169,24 +155,21 @@ Kavie.validatorFunctions = {
         }
         return false;
       }
-      return false; // noting is an invalid date
+      return false; 
     },
     birthdate: function (propVal, eleVal) {
-        // check to see if it is a valid date
         if (!Kavie.validatorFunctions.date(propVal, eleVal)) {
             return false;
         }
 
         var date = new Date(eleVal);
 
-        // check to see if the date is in the future
         if (date > new Date()) {
             return false;
         }
 
-        // check to see if date is a rational birthdate
         var minDateAllowed = new Date();
-        minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); // 120 is age of oldest person allowd
+        minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); 
 
         if (date < minDateAllowed) {
             return false;
