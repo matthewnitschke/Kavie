@@ -4,134 +4,80 @@
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
 */
 
-// This is the knockout js extender
-// simply adds a few things to the observable so we can access these from the kavie object
-ko.extenders.kavie = function (target, rules) {
-    target.hasError = ko.observable(); // tracks whether this observable is valid or not
+// This is a singleton pattern for the Kavie object to validate against
+;(function(ns){
 
-    // if contains addToArray, add this observable to the global Kavie object
-    // (not sure if i like this)
-    if (rules.addToArray){
-      Kavie.add(target);
-      delete rules.addToArray;
+  // holds out observables and sections
+  ns.observables = [];
+  ns.sections = [];
+
+  // adds a kavieObservables to the object observables
+  ns.add = function(obs){
+    if (isKavieObservable(obs)){
+      observables = this.observables.concat(obs);
     }
-
-    // if section exsists add observable to it
-    if (rules.section){
-      if (!Kavie.sections[rules.section]){
-        Kavie.sections[rules.section] = [];
-      }
-
-      Kavie.sections[rules.section].push(target);
-
-      delete rules.section;
-    }
-
-    // add the passed in rules to the observable
-    target.rules = rules;
-
-    // Simply checks each rule attached to this observable and changes hasError variable
-    function validate(newValue) {
-        var rules = target.rules;
-
-        for (key in rules) {
-            for (funcKey in Kavie.validatorFunctions) {
-                if (key == funcKey) {
-                    var isValid = Kavie.validatorFunctions[funcKey](rules[key], newValue);
-                    if (!isValid) {
-                        target.hasError(true);
-                        return;
-                    }
-                }
-            }
-        }
-
-        target.hasError(false);
-    }
-
-
-    target.startValidation = function () {
-        target.subscription = target.subscribe(validate); // creates a subscribable to update when value changes
-        validate(target());
-    }
-
-    target.stopValidation = function () {
-        target.subscription.dispose();
-        target.hasError(false);
-    }
-
-    return target;
-};
-
-
-var Kavie = function(){} // the global kavie object
-Kavie.observables = [];
-Kavie.sections = [];
-
-// a simple helper function to check if observables have been extended with the kavie extender
-Kavie.isKavieObservable = function(observable){
-  if (observable.hasOwnProperty("hasError")){ // when you extend an observable with kavie, it addes hasError.
-    return true;
-  } else {
-    return false;
   }
-}
 
-// adds a kavie observable to the global kavie object
-Kavie.add = function(obs){
-  if (this.isKavieObservable(obs)){
-    this.observables = this.observables.concat(obs);
-  }
-}
+  // turn validaton on
+  ns.isValid = function(vm){
+    // vm can be a viewModel or a Kavie.section
+    var isValid = true;
 
-// returs a list of all the kavie observables
-// pulls from the global object, and a viewModel or section that can be passed in
-Kavie.compileObservables = function(vm){
-  var kavieObservables = [];
+    var kavieObservables = compileObservables(vm);
 
-  if (this.observables.length > 0){
-    kavieObservables = kavieObservables.concat(this.observables);
-  }
-  if (vm){
-    var keys = Object.keys(vm);
-    for(var i = 0; i < keys.length; i ++){
-      if (this.isKavieObservable(vm[keys[i]])){
-        kavieObservables.push(vm[keys[i]]);
+    for(var i = 0; i < kavieObservables.length; i ++){
+      kavieObservables[i].startValidation();
+
+      if (isValid) {
+          if (kavieObservables[i].hasError()) {
+              isValid = false;
+          }
       }
     }
+    return isValid;
   }
-  return kavieObservables;
-}
 
-// the main is valid function run to see if observables are valid
-Kavie.isValid = function(vm){
-  var isValid = true;
+  // turns off validation
+  ns.deactivate = function(vm){
+    var kavieObservables = compileObservables(vm);
 
-  var kavieObservables = Kavie.compileObservables(vm);
-
-  for(var i = 0; i < kavieObservables.length; i ++){
-    kavieObservables[i].startValidation();
-
-    if (isValid) {
-        if (kavieObservables[i].hasError()) {
-            isValid = false;
-        }
+    for(var i = 0; i < kavieObservables.length; i ++){
+      kavieObservables[i].stopValidation();
     }
   }
-  return isValid;
-}
 
-// simply deactivates all observables
-Kavie.deactivate = function(vm){
-  var kavieObservables = Kavie.compileObservables(vm);
-
-  for(var i = 0; i < kavieObservables.length; i ++){
-    kavieObservables[i].stopValidation();
+  // simple helper method to see if an observable has been extended with the kavie extender
+  var isKavieObservable = function(observable){
+    if (observable.hasOwnProperty("hasError")){ // when you extend an observable with kavie, it addes hasError.
+      return true;
+    } else {
+      return false;
+    }
   }
-}
 
-// built in validator functions
-Kavie.validatorFunctions = {
+  // returns an array of all kavieObservables found in the viewModel potentially passed in,
+  // and attached to the Kavie object it's self
+  var compileObservables = function(vm){
+    var kavieObservables = [];
+
+    if (ns.observables.length > 0){
+      kavieObservables = kavieObservables.concat(this.observables);
+    }
+
+    // vm can be a viewModel or a Kavie.section['...']
+    if (vm){
+      var keys = Object.keys(vm);
+      for(var i = 0; i < keys.length; i ++){
+        if (isKavieObservable(vm[keys[i]])){
+          kavieObservables.push(vm[keys[i]]);
+        }
+      }
+    }
+    return kavieObservables;
+  }
+
+  // built in validator functions
+  ns.validatorFunctions = {
     required: function (propVal, eleVal) {
         if (propVal) {
             return (eleVal ? true : false);
@@ -201,4 +147,66 @@ Kavie.validatorFunctions = {
         return false;
       }
     }
-}
+  }
+
+}(this.Kavie = this.Kavie || {}));
+
+
+// This is the knockout js extender
+// simply adds a few things to the observable so we can access these from the kavie object
+ko.extenders.kavie = function (target, rules) {
+    target.hasError = ko.observable(); // tracks whether this observable is valid or not
+
+    // if contains addToArray, add this observable to the global Kavie object
+    // (not sure if i like this)
+    if (rules.addToArray){
+      Kavie.add(target);
+      delete rules.addToArray;
+    }
+
+    // if section exsists add observable to it
+    if (rules.section){
+      if (!Kavie.sections[rules.section]){
+        Kavie.sections[rules.section] = [];
+      }
+
+      Kavie.sections[rules.section].push(target);
+
+      delete rules.section;
+    }
+
+    // add the passed in rules to the observable
+    target.rules = rules;
+
+    // Simply checks each rule attached to this observable and changes hasError variable
+    function validate(newValue) {
+        var rules = target.rules;
+
+        for (key in rules) {
+            for (funcKey in Kavie.validatorFunctions) {
+                if (key == funcKey) {
+                    var isValid = Kavie.validatorFunctions[funcKey](rules[key], newValue);
+                    if (!isValid) {
+                        target.hasError(true);
+                        return;
+                    }
+                }
+            }
+        }
+
+        target.hasError(false);
+    }
+
+
+    target.startValidation = function () {
+        target.subscription = target.subscribe(validate); // creates a subscribable to update when value changes
+        validate(target());
+    }
+
+    target.stopValidation = function () {
+        target.subscription.dispose();
+        target.hasError(false);
+    }
+
+    return target;
+};
