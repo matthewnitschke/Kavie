@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kavie</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="../node_modules/knockout/build/output/knockout-latest.js"></script>
+  <script src="../src/kavie.js"></script>
+
+</head>
+<body>
+  <h1>Part 1</h1>
+  <div class="block">
+    Required:<br>
+    <input type="text" data-bind="textInput: value, css:{'validation-error': value.hasError}">
+  </div>
+
+  <div class="block">
+    Min(4):<br>
+    <input type="text" data-bind="textInput: valueTwo, css:{'validation-error': valueTwo.hasError}">
+  </div>
+
+  <h1>Part 2</h1>
+  <div class="block">
+    Birthdate:<br>
+    <input type="text" data-bind="textInput: valueThree, css:{'validation-error': valueThree.hasError}">
+  </div>
+
+  <div class="block">
+    Date:<br>
+    <input type="text" data-bind="textInput: valueFour, css:{'validation-error': valueFour.hasError}">
+  </div>
+
+  <input type="button" data-bind="click: submitOne" value="Validate Part One">
+  <input type="button" data-bind="click: deactivateOne" value="Deactivate Part One"><br><br>
+
+  <input type="button" data-bind="click: submitTwo" value="Validate Part Two">
+  <input type="button" data-bind="click: deactivateTwo" value="Deactivate Part Two">
+
+  <script>
+    function ViewModel(){
+      var self = this;
+
+      self.validate = ko.observable(false);
+
+      self.value = ko.observable().extend({
+        kavie: { required: true, section: "first" }
+      });
+
+      self.valueTwo = ko.observable().extend({
+        kavie: { min: 4, section: "first" }
+      });
+
+      self.valueThree = ko.observable().extend({
+        kavie: { birthdate: true, section: "second" }
+      });
+
+      self.valueFour = ko.observable().extend({
+        kavie: { date: true, section: "second" }
+      });
+
+      Kavie.sections["first"].addVariableValidation(self.validate);
+
+      self.submitOne = function(){
+        if (Kavie.isValid(Kavie.sections.first)){
+          console.log("All Good!");
+        } else {
+          console.log("Oh No!");
+        }
+      }
+
+      self.deactivateOne = function(){
+        Kavie.deactivate(Kavie.sections["first"]);
+      }
+
+      self.submitTwo = function(){
+        if (Kavie.isValid(Kavie.sections["second"])){
+          console.log("Yay! Completely Good!");
+        } else {
+          console.log("Agh! Not good!");
+        }
+      }
+
+      self.deactivateTwo = function(){
+        Kavie.deactivate(Kavie.sections["second"]);
+      }
+    }
+    ko.applyBindings(new ViewModel());
+  </script>
+</body>
+</html>

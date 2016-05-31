@@ -9,7 +9,7 @@
 
   // holds out observables and sections
   ns.observables = [];
-  ns.sections = [];
+  ns.sections = {};
 
   // adds a kavieObservables to the object observables
   ns.add = function(obs){
@@ -34,6 +34,18 @@
           }
       }
     }
+    return isValid;
+  }
+
+  ns.isSectionValid = function(section){
+    var isValid = true;
+
+    if (section.validate){
+      isValid = ns.isValid(section.observables);
+    }
+
+    // else isValid stays true
+
     return isValid;
   }
 
@@ -151,6 +163,17 @@
 
 }(this.Kavie = this.Kavie || {}));
 
+function KavieSection(){
+  var self = this;
+
+  self.observables = [];
+
+  self.validate = true; // initially always validate
+  self.addVariableValidation = function(validate){
+    self.validate = validate;
+  }
+}
+
 
 // This is the knockout js extender
 // simply adds a few things to the observable so we can access these from the kavie object
@@ -170,10 +193,10 @@ ko.extenders.kavie = function (target, rules) {
     // if section exsists add observable to it
     if (localRules.section){
       if (!Kavie.sections[localRules.section]){
-        Kavie.sections[localRules.section] = [];
+        Kavie.sections[localRules.section] = new KavieSection();
       }
 
-      Kavie.sections[localRules.section].push(target);
+      Kavie.sections[localRules.section].observables.push(target);
 
       delete localRules.section;
     }
