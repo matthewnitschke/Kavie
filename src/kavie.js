@@ -155,28 +155,31 @@
 // This is the knockout js extender
 // simply adds a few things to the observable so we can access these from the kavie object
 ko.extenders.kavie = function (target, rules) {
+    // make a copy of rules because we delete from it, and that would delete the key from the object that is passed in
+    var localRules = JSON.parse(JSON.stringify(rules));
+
     target.hasError = ko.observable(); // tracks whether this observable is valid or not
 
     // if contains addToArray, add this observable to the global Kavie object
     // (not sure if i like this)
-    if (rules.addToArray){
+    if (localRules.addToArray){
       Kavie.add(target);
-      delete rules.addToArray;
+      delete localRules.addToArray;
     }
 
     // if section exsists add observable to it
-    if (rules.section){
-      if (!Kavie.sections[rules.section]){
-        Kavie.sections[rules.section] = [];
+    if (localRules.section){
+      if (!Kavie.sections[localRules.section]){
+        Kavie.sections[localRules.section] = [];
       }
 
-      Kavie.sections[rules.section].push(target);
+      Kavie.sections[localRules.section].push(target);
 
-      delete rules.section;
+      delete localRules.section;
     }
 
     // add the passed in rules to the observable
-    target.rules = rules;
+    target.rules = localRules;
 
     // Simply checks each rule attached to this observable and changes hasError variable
     function validate(newValue) {
