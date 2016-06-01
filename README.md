@@ -74,30 +74,6 @@ Kavie.validatorFunctions.isYea = function(propVal, eleVal){
   }
 }
 ```
-
-#Validation methods
-You can specify observables to validate a few different ways
-
-```javascript
-// this will validate all of the kavie observables an object you pass in
-Kavie.isValid(self); // self being the viewModel
-
-// you can also add observables directly to the Kavie object
-Kavie.add(observable);
-Kavie.add([observable, observable, ...]);
-
-// then when you call isValid it will validate all added observables
-Kavie.isValid();
-
-// and finally, for lazy people, you can tell the extender to add it for you
-self.value = ko.observable().extend({
-  kavie:{
-    required: true,
-    addToArray: true // tell Kavie to add this observable to the array
-  }
-});
-```
-
 #Sections
 Sections in kavie are ways to validate different parts of a view model.
 
@@ -119,6 +95,29 @@ self.valueTwo = ko.observable().extend({
 self.isValid(Kavie.sections["basicInfo"]); // validate the first section
 self.isValid(Kavie.sections["otherInfo"]); // validate the second section
 ```
+
+## Variable Validation
+Sections have an ability to dynamiclly turn on and off their validation. This can be helpful when validating against optional fileds. In this example the kavie section will only be validated if the boolean observable validate is true
+
+```javascript
+self.value = ko.observable().extend({
+  kavie:{
+    section: "dynamicSection"
+  }
+});
+
+self.validate = ko.observable(true);
+Kavie.sections["dynamicSection"].addVariableValidation(self.validate);
+
+self.submit = function(){
+  // note the use of isSectionValid in this example
+  // this method must be used if using variable validation
+  if (Kavie.isSectionValid("dynamicSection") { 
+    console.log("All Good!");
+  }
+}
+```
+
 
 #Deactivate
 You can also deactivate kavie after isValid()
