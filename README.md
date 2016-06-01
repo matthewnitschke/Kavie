@@ -4,15 +4,11 @@
 Kavie is small (minified ~2kb), easy to use, and it works
 
 ## Installation
-Simply install from npm
-```
-npm install kavie
-```
+Simply copy the kavie.js file in dist into your project and reference it in your project
 
-Then just add it to your project. Knockoutjs is the only dependency.
 ```html
 <script src="/path/to/knockout.js"></script>
-<script src="node_modules/kavie/dist/kavie.js"></script>
+<script src="/path/to/kavie.js"></script>
 ```
 
 # Usage
