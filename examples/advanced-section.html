@@ -32,7 +32,7 @@
         kavie: { required: true, section: "first" }
       });
 
-      Kavie.sections["first"].addVariableValidation(self.validate);
+      Kavie.addVariableValidation("first", self.validate);
 
       self.submit = function(){
         if (Kavie.isSectionValid("first")){

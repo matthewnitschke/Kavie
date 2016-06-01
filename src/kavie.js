@@ -60,6 +60,7 @@
     var section = ns.sections[sectionName];
     if (!section){
       ns.sections[sectionName] = new KavieSection();
+      section = ns.sections[sectioName];
     }
 
     section.validate = shouldValidate;
