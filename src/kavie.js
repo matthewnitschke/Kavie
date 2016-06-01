@@ -8,15 +8,7 @@
 ;(function(ns){
 
   // holds out observables and sections
-  ns.observables = [];
   ns.sections = {};
-
-  // adds a kavieObservables to the object observables
-  ns.add = function(obs){
-    if (isKavieObservable(obs)){
-      observables = this.observables.concat(obs);
-    }
-  }
 
   // turn validaton on
   ns.isValid = function(vm){
@@ -29,19 +21,24 @@
       kavieObservables[i].startValidation();
 
       if (isValid) {
-          if (kavieObservables[i].hasError()) {
-              isValid = false;
-          }
+        if (kavieObservables[i].hasError()) {
+            isValid = false;
+        }
       }
     }
+
     return isValid;
   }
 
-  ns.isSectionValid = function(section){
+  ns.isSectionValid = function(sectionName){
+    var section = ns.sections[sectionName];
+
     var isValid = true;
 
-    if (section.validate){
+    if (ko.unwrap(section.validate)){
       isValid = ns.isValid(section.observables);
+    } else {
+      ns.deactivate(section.observables);
     }
 
     // else isValid stays true
@@ -70,13 +67,9 @@
   // returns an array of all kavieObservables found in the viewModel potentially passed in,
   // and attached to the Kavie object it's self
   var compileObservables = function(vm){
+
     var kavieObservables = [];
 
-    if (ns.observables.length > 0){
-      kavieObservables = kavieObservables.concat(this.observables);
-    }
-
-    // vm can be a viewModel or a Kavie.section['...']
     if (vm){
       var keys = Object.keys(vm);
       for(var i = 0; i < keys.length; i ++){
@@ -183,13 +176,6 @@ ko.extenders.kavie = function (target, rules) {
 
     target.hasError = ko.observable(); // tracks whether this observable is valid or not
 
-    // if contains addToArray, add this observable to the global Kavie object
-    // (not sure if i like this)
-    if (localRules.addToArray){
-      Kavie.add(target);
-      delete localRules.addToArray;
-    }
-
     // if section exsists add observable to it
     if (localRules.section){
       if (!Kavie.sections[localRules.section]){
@@ -230,8 +216,10 @@ ko.extenders.kavie = function (target, rules) {
     }
 
     target.stopValidation = function () {
+      if (target.subscription){
         target.subscription.dispose();
-        target.hasError(false);
+      }
+      target.hasError(false);
     }
 
     return target;
