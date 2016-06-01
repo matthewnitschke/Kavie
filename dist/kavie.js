@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 0.3.1
+    Version: 0.4.0
 */
 
 ;(function(ns){
@@ -41,7 +41,7 @@
     var pv = ko.unwrap(parentValidate);
     var tv = ko.unwrap(section.validate);
 
-        if (!((pv || isNaN(pv)) && tv)){
+    if (!((pv || isNaN(pv)) && tv)){
         ns.deactivate(section.observables);
     } else {
       isValid = ns.isValid(section.observables);
