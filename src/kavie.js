@@ -31,9 +31,7 @@
     return isValid;
   }
 
-  ns.isSectionValid = function(sectionName, parentValidate){
-    // validate parameter is for the recusive call. We want the parent validation to tree down to all children
-    // if it is undefinded just use this sections validation variable
+  ns.isSectionValid = function(sectionName){
     var section = ns.sections[sectionName];
 
     var isValid = true;
@@ -44,13 +42,10 @@
       ns.isSectionValid(children[i], section.validate); // recursivlly go through all sections
     }
 
-    var pv = ko.unwrap(parentValidate);
-    var tv = ko.unwrap(section.validate);
-
-    if (!((pv || isNaN(pv)) && tv)){
-        ns.deactivate(section.observables);
-    } else {
+    if (ko.unwrap(section.validate)){
       isValid = ns.isValid(section.observables);
+    } else {
+      ns.deactivate(section.observables);
     }
 
     // else isValid stays true

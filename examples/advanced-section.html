@@ -21,18 +21,22 @@
   </div>
 
   <input type="button" data-bind="click: submit" value="Validate">
-  <input type="button" data-bind="click: submitSec" value="Validate Sub">
+  <input type="button" data-bind="click: submitSub" value="Validate Sub">
   <br>
   <br>
 
 
   <input type="checkbox" data-bind="checked: validate" /> Enable validation
+  <input type="checkbox" data-bind="checked: validateSub" /> Enable validation on Sub
+
+  <input type="button" value="Deactivate" data-bind="click: deactivate">
 
   <script>
     function ViewModel(){
       var self = this;
 
       self.validate = ko.observable(false);
+      self.validateSub = ko.observable(false);
 
       self.value = ko.observable().extend({
         kavie: { required: true, section: "first" }
@@ -43,6 +47,7 @@
       })
 
       Kavie.addVariableValidation("first", self.validate);
+      Kavie.addVariableValidation("first-sub", self.validateSub);
       Kavie.addSectionChild("first", "first-sub");
 
       self.submit = function(){
@@ -53,8 +58,12 @@
         }
       }
 
-      self.submitSec = function(){
+      self.submitSub = function(){
         Kavie.isSectionValid("first-sub");
+      }
+
+      self.deactivate = function(){
+        Kavie.deactivate(Kavie.sections["first"])
       }
     }
     ko.applyBindings(new ViewModel());
