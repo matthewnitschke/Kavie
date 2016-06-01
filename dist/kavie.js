@@ -27,15 +27,24 @@
     return isValid;
   }
 
-  ns.isSectionValid = function(sectionName){
+  ns.isSectionValid = function(sectionName, parentValidate){
     var section = ns.sections[sectionName];
 
     var isValid = true;
 
-    if (ko.unwrap(section.validate)){
-      isValid = ns.isValid(section.observables);
+    var children = Object.keys(section.children);
+
+    for(var i = 0; i < children.length; i ++){
+      ns.isSectionValid(children[i], section.validate); 
+    }
+
+    var pv = ko.unwrap(parentValidate);
+    var tv = ko.unwrap(section.validate);
+
+        if (!((pv || isNaN(pv)) && tv)){
+        ns.deactivate(section.observables);
     } else {
-      ns.deactivate(section.observables);
+      isValid = ns.isValid(section.observables);
     }
 
 
@@ -53,12 +62,19 @@
   ns.addVariableValidation = function(sectionName, shouldValidate){
     var section = ns.sections[sectionName];
     if (!section){
-      ns.sections[sectionName] = new KavieSection();
-      section = ns.sections[sectionName];
+      section = ns.sections[sectionName] = new KavieSection();
     }
 
     section.validate = shouldValidate;
+  }
 
+  ns.addSectionChild = function(parentSectionName, childSectionName){
+    var parentSection = ns.sections[parentSectionName];
+    if (!parentSection){
+      parentSection = ns.sections[parentSectionName] = new KavieSection();
+    }
+
+    parentSection.children[childSectionName] = new KavieSection();
   }
 
   var isKavieObservable = function(observable){
@@ -163,6 +179,8 @@ function KavieSection(){
   var self = this;
 
   self.observables = [];
+
+  self.children = {};
 
   self.validate = true; 
 }

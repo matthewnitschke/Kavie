@@ -31,15 +31,26 @@
     return isValid;
   }
 
-  ns.isSectionValid = function(sectionName){
+  ns.isSectionValid = function(sectionName, parentValidate){
+    // validate parameter is for the recusive call. We want the parent validation to tree down to all children
+    // if it is undefinded just use this sections validation variable
     var section = ns.sections[sectionName];
 
     var isValid = true;
 
-    if (ko.unwrap(section.validate)){
-      isValid = ns.isValid(section.observables);
+    var children = Object.keys(section.children);
+
+    for(var i = 0; i < children.length; i ++){
+      ns.isSectionValid(children[i], section.validate); // recursivlly go through all sections
+    }
+
+    var pv = ko.unwrap(parentValidate);
+    var tv = ko.unwrap(section.validate);
+    
+    if (!((pv || isNaN(pv)) && tv)){
+        ns.deactivate(section.observables);
     } else {
-      ns.deactivate(section.observables);
+      isValid = ns.isValid(section.observables);
     }
 
     // else isValid stays true
@@ -59,12 +70,19 @@
   ns.addVariableValidation = function(sectionName, shouldValidate){
     var section = ns.sections[sectionName];
     if (!section){
-      ns.sections[sectionName] = new KavieSection();
-      section = ns.sections[sectionName];
+      section = ns.sections[sectionName] = new KavieSection();
     }
 
     section.validate = shouldValidate;
+  }
 
+  ns.addSectionChild = function(parentSectionName, childSectionName){
+    var parentSection = ns.sections[parentSectionName];
+    if (!parentSection){
+      parentSection = ns.sections[parentSectionName] = new KavieSection();
+    }
+
+    parentSection.children[childSectionName] = new KavieSection();
   }
 
   // simple helper method to see if an observable has been extended with the kavie extender
@@ -176,6 +194,8 @@ function KavieSection(){
   var self = this;
 
   self.observables = [];
+
+  self.children = {};
 
   self.validate = true; // initially always validate
 }

@@ -11,11 +11,17 @@
 </head>
 <body>
   <div class="block">
-    Required:<br>
+    Section - "first":<br>
     <input type="text" data-bind="textInput: value, css:{'validation-error': value.hasError}">
   </div>
 
+  <div class="block">
+    Section - "first-sub":<br>
+    <input type="text" data-bind="textInput: subValue, css:{'validation-error': subValue.hasError}">
+  </div>
+
   <input type="button" data-bind="click: submit" value="Validate">
+  <input type="button" data-bind="click: submitSec" value="Validate Sub">
   <br>
   <br>
 
@@ -32,7 +38,12 @@
         kavie: { required: true, section: "first" }
       });
 
+      self.subValue = ko.observable().extend({
+        kavie: { required: true, section: "first-sub" }
+      })
+
       Kavie.addVariableValidation("first", self.validate);
+      Kavie.addSectionChild("first", "first-sub");
 
       self.submit = function(){
         if (Kavie.isSectionValid("first")){
@@ -40,6 +51,10 @@
         } else {
           console.log("Oh No!");
         }
+      }
+
+      self.submitSec = function(){
+        Kavie.isSectionValid("first-sub");
       }
     }
     ko.applyBindings(new ViewModel());
