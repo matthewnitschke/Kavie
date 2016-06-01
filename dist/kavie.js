@@ -2,6 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
+    Verson - 0.3.0
 */
 
 ;(function(ns){
@@ -41,7 +42,7 @@
   }
 
   var isKavieObservable = function(observable){
-    if (observable.hasOwnProperty("hasError")){ 
+    if (observable.hasOwnProperty("hasError")){
       return true;
     } else {
       return false;
@@ -86,13 +87,13 @@
       if (eleVal){
         return eleVal.length <= propVal;
       }
-      return true; 
+      return true;
     },
     min: function (propVal, eleVal) {
       if (eleVal){
         return eleVal.length >= propVal;
       }
-      return false; 
+      return false;
     },
     date: function (propVal, eleVal) {
       if (eleVal){
@@ -104,7 +105,7 @@
         }
         return false;
       }
-      return false; 
+      return false;
     },
     birthdate: function (propVal, eleVal) {
         if (!Kavie.validatorFunctions.date(propVal, eleVal)) {
@@ -118,7 +119,7 @@
         }
 
         var minDateAllowed = new Date();
-        minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); 
+        minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120);
 
         if (date < minDateAllowed) {
             return false;
@@ -139,7 +140,7 @@
 
 
 ko.extenders.kavie = function (target, rules) {
-    target.hasError = ko.observable(); 
+    target.hasError = ko.observable();
 
     if (rules.addToArray){
       Kavie.add(target);
@@ -178,7 +179,7 @@ ko.extenders.kavie = function (target, rules) {
 
 
     target.startValidation = function () {
-        target.subscription = target.subscribe(validate); 
+        target.subscription = target.subscribe(validate);
         validate(target());
     }
 
