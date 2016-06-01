@@ -70,6 +70,10 @@
 
     var kavieObservables = [];
 
+    if (vm && vm.hasOwnProperty("observables")){
+      vm = vm.observables;
+    }
+
     if (vm){
       var keys = Object.keys(vm);
       for(var i = 0; i < keys.length; i ++){
