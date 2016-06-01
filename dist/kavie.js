@@ -2,19 +2,11 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Verson - 0.3.0
 */
 
 ;(function(ns){
 
-  ns.observables = [];
-  ns.sections = [];
-
-  ns.add = function(obs){
-    if (isKavieObservable(obs)){
-      observables = this.observables.concat(obs);
-    }
-  }
+  ns.sections = {};
 
   ns.isValid = function(vm){
     var isValid = true;
@@ -25,11 +17,27 @@
       kavieObservables[i].startValidation();
 
       if (isValid) {
-          if (kavieObservables[i].hasError()) {
-              isValid = false;
-          }
+        if (kavieObservables[i].hasError()) {
+            isValid = false;
+        }
       }
     }
+
+    return isValid;
+  }
+
+  ns.isSectionValid = function(sectionName){
+    var section = ns.sections[sectionName];
+
+    var isValid = true;
+
+    if (ko.unwrap(section.validate)){
+      isValid = ns.isValid(section.observables);
+    } else {
+      ns.deactivate(section.observables);
+    }
+
+
     return isValid;
   }
 
@@ -42,7 +50,7 @@
   }
 
   var isKavieObservable = function(observable){
-    if (observable.hasOwnProperty("hasError")){
+    if (observable.hasOwnProperty("hasError")){ 
       return true;
     } else {
       return false;
@@ -50,10 +58,11 @@
   }
 
   var compileObservables = function(vm){
+
     var kavieObservables = [];
 
-    if (ns.observables.length > 0){
-      kavieObservables = kavieObservables.concat(this.observables);
+    if (vm && vm.hasOwnProperty("observables")){
+      vm = vm.observables;
     }
 
     if (vm){
@@ -87,13 +96,13 @@
       if (eleVal){
         return eleVal.length <= propVal;
       }
-      return true;
+      return true; 
     },
     min: function (propVal, eleVal) {
       if (eleVal){
         return eleVal.length >= propVal;
       }
-      return false;
+      return false; 
     },
     date: function (propVal, eleVal) {
       if (eleVal){
@@ -105,7 +114,7 @@
         }
         return false;
       }
-      return false;
+      return false; 
     },
     birthdate: function (propVal, eleVal) {
         if (!Kavie.validatorFunctions.date(propVal, eleVal)) {
@@ -119,7 +128,7 @@
         }
 
         var minDateAllowed = new Date();
-        minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120);
+        minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); 
 
         if (date < minDateAllowed) {
             return false;
@@ -138,26 +147,34 @@
 
 }(this.Kavie = this.Kavie || {}));
 
+function KavieSection(){
+  var self = this;
+
+  self.observables = [];
+
+  self.validate = true; 
+  self.addVariableValidation = function(validate){
+    self.validate = validate;
+  }
+}
+
 
 ko.extenders.kavie = function (target, rules) {
-    target.hasError = ko.observable();
+    var localRules = JSON.parse(JSON.stringify(rules));
 
-    if (rules.addToArray){
-      Kavie.add(target);
-      delete rules.addToArray;
-    }
+    target.hasError = ko.observable(); 
 
-    if (rules.section){
-      if (!Kavie.sections[rules.section]){
-        Kavie.sections[rules.section] = [];
+    if (localRules.section){
+      if (!Kavie.sections[localRules.section]){
+        Kavie.sections[localRules.section] = new KavieSection();
       }
 
-      Kavie.sections[rules.section].push(target);
+      Kavie.sections[localRules.section].observables.push(target);
 
-      delete rules.section;
+      delete localRules.section;
     }
 
-    target.rules = rules;
+    target.rules = localRules;
 
     function validate(newValue) {
         var rules = target.rules;
@@ -179,13 +196,15 @@ ko.extenders.kavie = function (target, rules) {
 
 
     target.startValidation = function () {
-        target.subscription = target.subscribe(validate);
+        target.subscription = target.subscribe(validate); 
         validate(target());
     }
 
     target.stopValidation = function () {
+      if (target.subscription){
         target.subscription.dispose();
-        target.hasError(false);
+      }
+      target.hasError(false);
     }
 
     return target;
