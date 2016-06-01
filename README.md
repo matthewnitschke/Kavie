@@ -125,3 +125,20 @@ Kavie.deactivate(Kavie.sections["basicInfo"]) // will deactivate just the basicI
 
 #Problems?
 Thanks of taking a look at kavie. If you have any problems let me know and I would love to help you out
+
+
+#Changelog
+
+### 0.4
+More new advanced features. Added section children which give you the ability to chain sections together
+
+### 0.3
+New advanced features. Validation variables allow you to dynamiclly turn off validation on different kavie sections
+
+Removed old unused features: Kavie.add method removed, addToArray kavie property removed
+
+### 0.2
+Full rewrite of application, moved to a singelton pattern. Added sections which gave the ability to validate different areas of observalbes
+
+### 0.1
+First version. Basic implementation of ideas, bad execution
