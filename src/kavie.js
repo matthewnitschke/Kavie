@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 0.3.0
+    Version: 0.3.1
 */
 
 // This is a singleton pattern for the Kavie object to validate against
@@ -54,6 +54,16 @@
     for(var i = 0; i < kavieObservables.length; i ++){
       kavieObservables[i].stopValidation();
     }
+  }
+
+  ns.addVariableValidation = function(sectionName, shouldValidate){
+    var section = ns.sections[sectionName];
+    if (!section){
+      ns.sections[sectionName] = new KavieSection();
+    }
+
+    section.validate = shouldValidate;
+
   }
 
   // simple helper method to see if an observable has been extended with the kavie extender
@@ -167,9 +177,6 @@ function KavieSection(){
   self.observables = [];
 
   self.validate = true; // initially always validate
-  self.addVariableValidation = function(validate){
-    self.validate = validate;
-  }
 }
 
 

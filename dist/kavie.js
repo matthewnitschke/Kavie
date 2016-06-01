@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 0.3.0
+    Version: 0.3.1
 */
 
 ;(function(ns){
@@ -48,6 +48,16 @@
     for(var i = 0; i < kavieObservables.length; i ++){
       kavieObservables[i].stopValidation();
     }
+  }
+
+  ns.addVariableValidation = function(sectionName, shouldValidate){
+    var section = ns.sections[sectionName];
+    if (!section){
+      ns.sections[sectionName] = new KavieSection();
+    }
+
+    section.validate = shouldValidate;
+
   }
 
   var isKavieObservable = function(observable){
@@ -154,9 +164,6 @@ function KavieSection(){
   self.observables = [];
 
   self.validate = true; 
-  self.addVariableValidation = function(validate){
-    self.validate = validate;
-  }
 }
 
 
