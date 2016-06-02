@@ -103,7 +103,7 @@ self.value = ko.observable().extend({
 });
 
 self.validate = ko.observable(true);
-Kavie.sections["dynamicSection"].addVariableValidation(self.validate);
+Kavie.addVariableValidation("dynamicSection", self.validate);
 
 self.submit = function(){
   // note the use of isSectionValid in this example
