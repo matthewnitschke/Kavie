@@ -93,7 +93,7 @@ self.isValid(Kavie.sections["otherInfo"]); // validate the second section
 ```
 
 ## Variable Validation
-Sections have an ability to dynamiclly turn on and off their validation. This can be helpful when validating against optional fileds. In this example the kavie section will only be validated if the boolean observable validate is true
+Sections have an ability to dynamiclly turn on and off their validation. This can be helpful when validating against optional areas of a form but when enabled still want the entire form to be filled out. In this example the kavie section will only be validated if the boolean observable validate is true
 
 ```javascript
 self.value = ko.observable().extend({
