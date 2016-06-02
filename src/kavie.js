@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 0.4.0
+    Version: 0.4.2
 */
 
 // This is a singleton pattern for the Kavie object to validate against
@@ -60,6 +60,18 @@
     for(var i = 0; i < kavieObservables.length; i ++){
       kavieObservables[i].stopValidation();
     }
+  }
+
+  ns.deactivateSection = function(sectionName){
+    var section = ns.sections[sectionName];
+
+    var children = Object.keys(section.children);
+
+    for(var i = 0; i < children.length; i ++){
+      ns.deactivateSection(children[i]); // recursivlly go through all the section's children
+    }
+
+    ns.deactivate(section.observables);
   }
 
   ns.addVariableValidation = function(sectionName, shouldValidate){
