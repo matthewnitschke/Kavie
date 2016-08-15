@@ -88,8 +88,8 @@ self.valueTwo = ko.observable().extend({
     }
 });
 
-self.isValid(Kavie.sections["basicInfo"]); // validate the first section
-self.isValid(Kavie.sections["otherInfo"]); // validate the second section
+self.isSectionValid("basicInfo"); // validate the first section
+self.isSectionValid("otherInfo"); // validate the second section
 ```
 
 ## Variable Validation
