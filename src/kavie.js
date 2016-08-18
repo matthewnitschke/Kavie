@@ -126,7 +126,7 @@
   ns.validatorFunctions = {
     required: function (propVal, eleVal) {
         if (propVal) {
-            return (eleVal ? true : false);
+            return !(eleVal == null || eleVal === '');
         } else {
             return true;
         }
