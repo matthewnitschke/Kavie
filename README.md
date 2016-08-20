@@ -113,7 +113,31 @@ self.submit = function(){
   }
 }
 ```
+## Section Children
+If you want to chain sections together you can do that as well
 
+```javascript
+self.value = ko.observalbe().extend({
+  kavie: {
+    section: "parent"
+  }
+});
+
+self.value2 = ko.observalbe().extend({
+  kavie: {
+    section: "child"
+  }
+});
+
+Kavie.addSectionChild("parent", "child");
+
+self.submit = function(){
+  if (Kavie.isSectionValid("parent") { 
+    // both parent and child are valid
+    console.log("All Good!");
+  }
+}
+```
 
 #Deactivate
 You can also deactivate kavie after isValid()
