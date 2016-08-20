@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 0.4.2
+    Version: 0.4.3
 */
 
 ;(function(ns){
@@ -30,22 +30,31 @@
   ns.isSectionValid = function(sectionName){
     var section = ns.sections[sectionName];
 
-    var isValid = true;
+       var isValid = true;
 
-    var children = Object.keys(section.children);
+       if (ko.unwrap(section.validate)) {
 
-    for(var i = 0; i < children.length; i ++){
-      ns.isSectionValid(children[i], section.validate); 
-    }
+           var children = Object.keys(section.children);
 
-    if (ko.unwrap(section.validate)){
-      isValid = ns.isValid(section.observables);
-    } else {
-      ns.deactivate(section.observables);
-    }
+           for (var i = 0; i < children.length; i++) {
+               var childValid = ns.isSectionValid(children[i], section.validate);
+
+               if (isValid) {
+                   isValid = childValid;
+               }
+           }
+
+           var selfValid = ns.isValid(section.observables);
+
+           if (isValid) {
+               isValid = selfValid;
+           }
+       } else {
+           ns.deactivate(section.observables);
+       }
 
 
-    return isValid;
+       return isValid;
   }
 
   ns.deactivate = function(vm){
