@@ -159,6 +159,12 @@
       }
       return false; // opposite from above
     },
+    matching: function(propVal, eleVal){
+      if (ko.unwrap(propVal) == ko.unwrap(eleVal)){
+        return true;
+      }
+      return false;
+    },
     date: function (propVal, eleVal) {
       if (eleVal){
         if (eleVal.length == 10) {
