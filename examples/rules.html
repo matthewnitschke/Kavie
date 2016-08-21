@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kavie</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="../node_modules/knockout/build/output/knockout-latest.js"></script>
+  <script src="../src/kavie.js"></script>
+
+</head>
+<body>
+  <div class="block">
+    Required:<br>
+    <input type="text" data-bind="textInput: required, css:{'validation-error': required.hasError}">
+  </div>
+
+  <div class="block">
+    Numeric:<br>
+    <input type="text" data-bind="textInput: numeric, css:{'validation-error': numeric.hasError}">
+  </div>
+
+  <div class="block">
+    Max:<br>
+    <input type="text" data-bind="textInput: max, css:{'validation-error': max.hasError}">
+  </div>
+
+  <div class="block">
+    Min:<br>
+    <input type="text" data-bind="textInput: min, css:{'validation-error': min.hasError}">
+  </div>
+
+  <div class="block">
+    Matches:<br>
+    <input type="text" data-bind="textInput: matchesOne, css:{'validation-error': matchesOne.hasError}">
+    <input type="text" data-bind="textInput: matchesTwo, css:{'validation-error': matchesTwo.hasError}">
+  </div>
+
+  <div class="block">
+    Date:<br>
+    <input type="text" data-bind="textInput: date, css:{'validation-error': date.hasError}">
+  </div>
+
+  <div class="block">
+    Birthdate:<br>
+    <input type="text" data-bind="textInput: birthdate, css:{'validation-error': birthdate.hasError}">
+  </div>
+
+  <input type="button" data-bind="click: submit" value="Validate">
+
+  <script>
+    function ViewModel(){
+      var self = this;
+
+      self.required = ko.observable().extend({
+        kavie: {
+          required: true
+        }
+      });
+
+      self.numeric = ko.observable().extend({
+        kavie: {
+          numeric: true
+        }
+      });
+
+      self.max = ko.observable().extend({
+        kavie: {
+          max: 3
+        }
+      });
+
+      self.min = ko.observable().extend({
+        kavie: {
+          min: 3
+        }
+      });
+
+      self.matchesOne = ko.observable();
+      self.matchesTwo = ko.observable().extend({
+        kavie: {
+          matches: self.matchesOne
+        }
+      });
+
+
+      self.date = ko.observable().extend({
+        kavie: {
+          date: true
+        }
+      });
+
+      self.birthdate = ko.observable().extend({
+        kavie: {
+          birthdate: true
+        }
+      });
+
+      self.submit = function(){
+        if (Kavie.isValid(self)){
+          console.log("All Good!");
+        } else{
+          console.log("Oh No!");
+        }
+      }
+    }
+    ko.applyBindings(new ViewModel());
+  </script>
+</body>
+</html>

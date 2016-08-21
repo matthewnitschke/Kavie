@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 0.4.3
+    Version: 0.4.4
 */
 
 ;(function(ns){
@@ -150,6 +150,12 @@
       }
       return false; 
     },
+    matches: function(propVal, eleVal){
+      if (ko.unwrap(propVal) == ko.unwrap(eleVal)){
+        return true;
+      }
+      return false;
+    },
     date: function (propVal, eleVal) {
       if (eleVal){
         if (eleVal.length == 10) {
@@ -205,7 +211,7 @@ function KavieSection(){
 
 
 ko.extenders.kavie = function (target, rules) {
-    var localRules = JSON.parse(JSON.stringify(rules));
+    var localRules = rules;
 
     target.hasError = ko.observable(); 
 
@@ -215,8 +221,7 @@ ko.extenders.kavie = function (target, rules) {
       }
 
       Kavie.sections[localRules.section].observables.push(target);
-
-      delete localRules.section;
+      localRules.section = "";
     }
 
     target.rules = localRules;

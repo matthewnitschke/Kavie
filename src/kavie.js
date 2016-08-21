@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 0.4.3
+    Version: 0.4.4
 */
 
 // This is a singleton pattern for the Kavie object to validate against
@@ -159,7 +159,7 @@
       }
       return false; // opposite from above
     },
-    matching: function(propVal, eleVal){
+    matches: function(propVal, eleVal){
       if (ko.unwrap(propVal) == ko.unwrap(eleVal)){
         return true;
       }
@@ -226,7 +226,7 @@ function KavieSection(){
 // simply adds a few things to the observable so we can access these from the kavie object
 ko.extenders.kavie = function (target, rules) {
     // make a copy of rules because we delete from it, and that would delete the key from the object that is passed in
-    var localRules = JSON.parse(JSON.stringify(rules));
+    var localRules = rules;
 
     target.hasError = ko.observable(); // tracks whether this observable is valid or not
 
@@ -237,8 +237,8 @@ ko.extenders.kavie = function (target, rules) {
       }
 
       Kavie.sections[localRules.section].observables.push(target);
-
-      delete localRules.section;
+      localRules.section = "";
+      //delete localRules.section;
     }
 
     // add the passed in rules to the observable
