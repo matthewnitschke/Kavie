@@ -23,7 +23,7 @@
 
       if (isValid) {
         if (kavieObservables[i].hasError()) {
-            isValid = false;
+          isValid = false;
         }
       }
     }
@@ -34,31 +34,30 @@
   ns.isSectionValid = function(sectionName){
     var section = ns.sections[sectionName];
 
-       var isValid = true;
+    var isValid = true;
 
-       if (ko.unwrap(section.validate)) {
+    if (ko.unwrap(section.validate)) {
+      var children = Object.keys(section.children);
 
-           var children = Object.keys(section.children);
+      for (var i = 0; i < children.length; i++) {
+        var childValid = ns.isSectionValid(children[i], section.validate);
 
-           for (var i = 0; i < children.length; i++) {
-               var childValid = ns.isSectionValid(children[i], section.validate);
+        if (isValid) {
+          isValid = childValid;
+        }
+      }
 
-               if (isValid) {
-                   isValid = childValid;
-               }
-           }
+      var selfValid = ns.isValid(section.observables);
 
-           var selfValid = ns.isValid(section.observables);
+      if (isValid) {
+        isValid = selfValid;
+      }
 
-           if (isValid) {
-               isValid = selfValid;
-           }
-       } else {
-           ns.deactivate(section.observables);
-       }
+    } else {
+      ns.deactivate(section.observables);
+    }
 
-
-       return isValid;
+    return isValid;
   }
 
   // turns off validation
