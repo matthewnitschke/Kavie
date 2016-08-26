@@ -4,8 +4,12 @@
 Kavie is small (minified ~2kb), easy to use, and it works
 
 ## Installation
-Simply copy the kavie.js file in dist into your project and reference it in your project
+You can download kavie from npm
+```
+npm install kavie
+```
 
+Then include it in your project after knockout js
 ```html
 <script src="/path/to/knockout.js"></script>
 <script src="/path/to/kavie.js"></script>
