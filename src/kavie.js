@@ -6,13 +6,13 @@
 */
 
 // This is a singleton pattern for the Kavie object to validate against
-;(function(ns) {
+;(function(ns){
 
   // holds out observables and sections
   ns.sections = {};
 
   // turn validaton on
-  ns.isValid = function(vm) {
+  ns.isValid = function(vm){
     // vm can be a viewModel or a Kavie.section
     var isValid = true;
 
@@ -31,7 +31,7 @@
     return isValid;
   }
 
-  ns.isSectionValid = function(sectionName) {
+  ns.isSectionValid = function(sectionName){
     var section = ns.sections[sectionName];
 
     var isValid = true;
@@ -62,7 +62,7 @@
   }
 
   // turns off validation
-  ns.deactivate = function(vm) {
+  ns.deactivate = function(vm){
     var kavieObservables = compileObservables(vm);
 
     for(var i = 0; i < kavieObservables.length; i ++){
@@ -70,7 +70,7 @@
     }
   }
 
-  ns.deactivateSection = function(sectionName) {
+  ns.deactivateSection = function(sectionName){
     var section = ns.sections[sectionName];
 
     var children = Object.keys(section.children);
@@ -81,7 +81,7 @@
     ns.deactivate(section.observables);
   }
 
-  ns.addVariableValidation = function(sectionName, shouldValidate) {
+  ns.addVariableValidation = function(sectionName, shouldValidate){
     var section = ns.sections[sectionName];
     if (!section){
       section = ns.sections[sectionName] = new KavieSection();
@@ -90,7 +90,7 @@
     section.validate = shouldValidate;
   }
 
-  ns.addSectionChild = function(parentSectionName, childSectionName) {
+  ns.addSectionChild = function(parentSectionName, childSectionName){
     var parentSection = ns.sections[parentSectionName];
     if (!parentSection) {
       parentSection = ns.sections[parentSectionName] = new KavieSection();
@@ -127,10 +127,11 @@
   }
 
   // built in validator functions
+  // general rule for these is if empty, return true (if you want it required, you can add the required function)
   ns.validatorFunctions = {
-    required: function (propVal, eleVal) {
+    required: function (propVal, eleVal){
         if (propVal) {
-            return !(eleVal == null || eleVal === '');
+            return hasValue(eleVal);
         } else {
             return true;
         }
@@ -143,13 +144,13 @@
       }
 
     },
-    max: function (propVal, eleVal) {
+    max: function (propVal, eleVal){
       if (eleVal){
         return eleVal.length <= propVal;
       }
       return true; // if no value is found, it doesnt have a length. So thus it is less than the propVal
     },
-    min: function (propVal, eleVal) {
+    min: function (propVal, eleVal){
       if (eleVal){
         return eleVal.length >= propVal;
       }
@@ -161,7 +162,7 @@
       }
       return false;
     },
-    date: function (propVal, eleVal) {
+    date: function (propVal, eleVal){
       if (eleVal){
         if (eleVal.length == 10) {
             if (new Date(eleVal) == "Invalid Date") {
@@ -173,7 +174,7 @@
       }
       return false; // noting is an invalid date
     },
-    birthdate: function (propVal, eleVal) {
+    birthdate: function (propVal, eleVal){
         // check to see if it is a valid date
         if (!Kavie.validatorFunctions.date(propVal, eleVal)) {
             return false;
@@ -182,7 +183,7 @@
         var date = new Date(eleVal);
 
         // check to see if the date is in the future
-        if (date > new Date()) {
+        if (date > new Date()){
             return false;
         }
 
@@ -190,13 +191,13 @@
         var minDateAllowed = new Date();
         minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); // 120 is age of oldest person allowd
 
-        if (date < minDateAllowed) {
+        if (date < minDateAllowed){
             return false;
         }
 
         return true;
     },
-    phone: function (propVal, eleVal) {
+    phone: function (propVal, eleVal){
       if (eleVal){
         if (eleVal.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/)) {
             return true;
@@ -223,6 +224,10 @@
     }
   }
 
+  var hasValue = function(value){
+     return !(value == null || value.length === 0);
+  }
+
 }(this.Kavie = this.Kavie || {}));
 
 function KavieSection(){
@@ -238,7 +243,7 @@ function KavieSection(){
 
 // This is the knockout js extender
 // simply adds a few things to the observable so we can access these from the kavie object
-ko.extenders.kavie = function (target, rules) {
+ko.extenders.kavie = function (target, rules){
     // make a copy of rules because we delete from it, and that would delete the key from the object that is passed in
     var localRules = rules;
 
@@ -259,11 +264,11 @@ ko.extenders.kavie = function (target, rules) {
     target.rules = localRules;
 
     // Simply checks each rule attached to this observable and changes hasError variable
-    function validate(newValue) {
+    function validate(newValue){
         var rules = target.rules;
 
-        for (key in rules) {
-            for (funcKey in Kavie.validatorFunctions) {
+        for (key in rules){
+            for (funcKey in Kavie.validatorFunctions){
                 if (key == funcKey) {
                     var isValid = Kavie.validatorFunctions[funcKey](rules[key], newValue);
                     if (!isValid) {
@@ -278,12 +283,12 @@ ko.extenders.kavie = function (target, rules) {
     }
 
 
-    target.startValidation = function () {
+    target.startValidation = function(){
         target.subscription = target.subscribe(validate); // creates a subscribable to update when value changes
         validate(target());
     }
 
-    target.stopValidation = function () {
+    target.stopValidation = function(){
       if (target.subscription){
         target.subscription.dispose();
       }
