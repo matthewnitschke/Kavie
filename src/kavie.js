@@ -6,13 +6,13 @@
 */
 
 // This is a singleton pattern for the Kavie object to validate against
-;(function(ns){
+;(function(ns) {
 
   // holds out observables and sections
   ns.sections = {};
 
   // turn validaton on
-  ns.isValid = function(vm){
+  ns.isValid = function(vm) {
     // vm can be a viewModel or a Kavie.section
     var isValid = true;
 
@@ -31,7 +31,7 @@
     return isValid;
   }
 
-  ns.isSectionValid = function(sectionName){
+  ns.isSectionValid = function(sectionName) {
     var section = ns.sections[sectionName];
 
     var isValid = true;
@@ -49,7 +49,7 @@
 
       var sectionObsValid = ns.isValid(section.observables);
 
-      if (!sectionObsValid) {
+      if (!sectionObsValid){
         isValid = false;
       }
 
@@ -62,7 +62,7 @@
   }
 
   // turns off validation
-  ns.deactivate = function(vm){
+  ns.deactivate = function(vm) {
     var kavieObservables = compileObservables(vm);
 
     for(var i = 0; i < kavieObservables.length; i ++){
@@ -70,7 +70,7 @@
     }
   }
 
-  ns.deactivateSection = function(sectionName){
+  ns.deactivateSection = function(sectionName) {
     var section = ns.sections[sectionName];
 
     var children = Object.keys(section.children);
@@ -81,7 +81,7 @@
     ns.deactivate(section.observables);
   }
 
-  ns.addVariableValidation = function(sectionName, shouldValidate){
+  ns.addVariableValidation = function(sectionName, shouldValidate) {
     var section = ns.sections[sectionName];
     if (!section){
       section = ns.sections[sectionName] = new KavieSection();
@@ -90,9 +90,9 @@
     section.validate = shouldValidate;
   }
 
-  ns.addSectionChild = function(parentSectionName, childSectionName){
+  ns.addSectionChild = function(parentSectionName, childSectionName) {
     var parentSection = ns.sections[parentSectionName];
-    if (!parentSection){
+    if (!parentSection) {
       parentSection = ns.sections[parentSectionName] = new KavieSection();
     }
 
