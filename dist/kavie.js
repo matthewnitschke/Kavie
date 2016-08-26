@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 0.4.6
+    Version: 0.4.7
 */
 
 ;(function(ns){
@@ -19,7 +19,7 @@
 
       if (isValid) {
         if (kavieObservables[i].hasError()) {
-            isValid = false;
+          isValid = false;
         }
       }
     }
@@ -30,31 +30,30 @@
   ns.isSectionValid = function(sectionName){
     var section = ns.sections[sectionName];
 
-       var isValid = true;
+    var isValid = true;
 
-       if (ko.unwrap(section.validate)) {
+    if (ko.unwrap(section.validate)) {
 
-           var children = Object.keys(section.children);
+      var children = Object.keys(section.children);
+      for (var i = 0; i < children.length; i++) {
+        var childValid = ns.isSectionValid(children[i]); 
 
-           for (var i = 0; i < children.length; i++) {
-               var childValid = ns.isSectionValid(children[i], section.validate);
+        if (!childValid) { 
+          isValid = false;
+        }
+      }
 
-               if (isValid) {
-                   isValid = childValid;
-               }
-           }
+      var sectionObsValid = ns.isValid(section.observables);
 
-           var selfValid = ns.isValid(section.observables);
+      if (!sectionObsValid){
+        isValid = false;
+      }
 
-           if (isValid) {
-               isValid = selfValid;
-           }
-       } else {
-           ns.deactivate(section.observables);
-       }
+    } else {
+      ns.deactivateSection(sectionName);
+    }
 
-
-       return isValid;
+    return isValid;
   }
 
   ns.deactivate = function(vm){
@@ -69,7 +68,6 @@
     var section = ns.sections[sectionName];
 
     var children = Object.keys(section.children);
-
     for(var i = 0; i < children.length; i ++){
       ns.deactivateSection(children[i]); 
     }
@@ -88,7 +86,7 @@
 
   ns.addSectionChild = function(parentSectionName, childSectionName){
     var parentSection = ns.sections[parentSectionName];
-    if (!parentSection){
+    if (!parentSection) {
       parentSection = ns.sections[parentSectionName] = new KavieSection();
     }
 
@@ -96,11 +94,7 @@
   }
 
   var isKavieObservable = function(observable){
-    if (observable.hasOwnProperty("hasError")){ 
-      return true;
-    } else {
-      return false;
-    }
+    return observable.hasOwnProperty("hasError"); 
   }
 
   var compileObservables = function(vm){
@@ -119,13 +113,14 @@
         }
       }
     }
+
     return kavieObservables;
   }
 
   ns.validatorFunctions = {
-    required: function (propVal, eleVal) {
+    required: function (propVal, eleVal){
         if (propVal) {
-            return !(eleVal == null || eleVal === '');
+            return hasValue(eleVal);
         } else {
             return true;
         }
@@ -138,13 +133,13 @@
       }
 
     },
-    max: function (propVal, eleVal) {
+    max: function (propVal, eleVal){
       if (eleVal){
         return eleVal.length <= propVal;
       }
       return true; 
     },
-    min: function (propVal, eleVal) {
+    min: function (propVal, eleVal){
       if (eleVal){
         return eleVal.length >= propVal;
       }
@@ -156,7 +151,7 @@
       }
       return false;
     },
-    date: function (propVal, eleVal) {
+    date: function (propVal, eleVal){
       if (eleVal){
         if (eleVal.length == 10) {
             if (new Date(eleVal) == "Invalid Date") {
@@ -168,27 +163,27 @@
       }
       return false; 
     },
-    birthdate: function (propVal, eleVal) {
+    birthdate: function (propVal, eleVal){
         if (!Kavie.validatorFunctions.date(propVal, eleVal)) {
             return false;
         }
 
         var date = new Date(eleVal);
 
-        if (date > new Date()) {
+        if (date > new Date()){
             return false;
         }
 
         var minDateAllowed = new Date();
         minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); 
 
-        if (date < minDateAllowed) {
+        if (date < minDateAllowed){
             return false;
         }
 
         return true;
     },
-    phone: function (propVal, eleVal) {
+    phone: function (propVal, eleVal){
       if (eleVal){
         if (eleVal.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/)) {
             return true;
@@ -215,6 +210,10 @@
     }
   }
 
+  var hasValue = function(value){
+     return !(value == null || value.length === 0);
+  }
+
 }(this.Kavie = this.Kavie || {}));
 
 function KavieSection(){
@@ -228,7 +227,7 @@ function KavieSection(){
 }
 
 
-ko.extenders.kavie = function (target, rules) {
+ko.extenders.kavie = function (target, rules){
     var localRules = rules;
 
     target.hasError = ko.observable(); 
@@ -244,11 +243,11 @@ ko.extenders.kavie = function (target, rules) {
 
     target.rules = localRules;
 
-    function validate(newValue) {
+    function validate(newValue){
         var rules = target.rules;
 
-        for (key in rules) {
-            for (funcKey in Kavie.validatorFunctions) {
+        for (key in rules){
+            for (funcKey in Kavie.validatorFunctions){
                 if (key == funcKey) {
                     var isValid = Kavie.validatorFunctions[funcKey](rules[key], newValue);
                     if (!isValid) {
@@ -263,12 +262,12 @@ ko.extenders.kavie = function (target, rules) {
     }
 
 
-    target.startValidation = function () {
+    target.startValidation = function(){
         target.subscription = target.subscribe(validate); 
         validate(target());
     }
 
-    target.stopValidation = function () {
+    target.stopValidation = function(){
       if (target.subscription){
         target.subscription.dispose();
       }
