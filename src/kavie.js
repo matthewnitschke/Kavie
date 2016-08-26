@@ -37,8 +37,8 @@
     var isValid = true;
 
     if (ko.unwrap(section.validate)) {
-      var children = Object.keys(section.children);
 
+      var children = Object.keys(section.children);
       for (var i = 0; i < children.length; i++) {
         var childValid = ns.isSectionValid(children[i]); // recursivlly check children sections
 
@@ -74,7 +74,6 @@
     var section = ns.sections[sectionName];
 
     var children = Object.keys(section.children);
-
     for(var i = 0; i < children.length; i ++){
       ns.deactivateSection(children[i]); // recursivlly go through all the section's children
     }
@@ -102,11 +101,7 @@
 
   // simple helper method to see if an observable has been extended with the kavie extender
   var isKavieObservable = function(observable){
-    if (observable.hasOwnProperty("hasError")){ // when you extend an observable with kavie, it addes hasError.
-      return true;
-    } else {
-      return false;
-    }
+    return observable.hasOwnProperty("hasError")){ // when you extend an observable with kavie, it addes hasError.
   }
 
   // returns an array of all kavieObservables found in the viewModel potentially passed in,
@@ -127,6 +122,7 @@
         }
       }
     }
+
     return kavieObservables;
   }
 
