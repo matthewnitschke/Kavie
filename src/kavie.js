@@ -40,21 +40,22 @@
       var children = Object.keys(section.children);
 
       for (var i = 0; i < children.length; i++) {
-        var childValid = ns.isSectionValid(children[i], section.validate);
+        var childValid = ns.isSectionValid(children[i]); // recursivlly check children sections
 
-        if (isValid) {
-          isValid = childValid;
+        if (!childValid) { // if a child is not valid, the entire section isn't
+          isValid = false;
         }
       }
 
-      var selfValid = ns.isValid(section.observables);
+      var sectionObsValid = ns.isValid(section.observables);
 
-      if (isValid) {
-        isValid = selfValid;
+      if (!sectionObsValid) {
+        isValid = false;
       }
 
     } else {
-      ns.deactivate(section.observables);
+      // if the section isn't validated, deactivate it
+      ns.deactivateSection(sectionName);
     }
 
     return isValid;
