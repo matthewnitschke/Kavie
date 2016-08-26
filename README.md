@@ -12,7 +12,7 @@ npm install kavie
 Then include it in your project after knockout js
 ```html
 <script src="/path/to/knockout.js"></script>
-<script src="/path/to/kavie.js"></script>
+<script src="/node_modules/kavie/dist/kavie.js"></script>
 ```
 
 # Usage
