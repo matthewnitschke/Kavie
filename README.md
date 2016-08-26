@@ -49,6 +49,8 @@ self.value = ko.observable().extend({
       min: 2, // [int] amount of characters: 2
       date: true, // [boolean] validates dates based on js dates
       birthdate: true, // [boolean] uses date, and must be in past with persons age less than 120
+      phone: true, // [boolean] uses regex to validate a valid 10 digit phone number
+      email: true, // [boolean] uses regex to validate a valid email
       numeric: true, // [boolean] must be an integer
       regexPattern: /([A-Z])\w+/ // [regex] matches a pattern
     }
