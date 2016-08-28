@@ -137,6 +137,7 @@
         }
     },
     numeric: function(propVal, eleVal){
+      // TODO: return true if empty
       if (propVal){
          return !isNaN(parseFloat(eleVal)) && isFinite(eleVal);
       } else {
@@ -163,6 +164,7 @@
       return false;
     },
     date: function (propVal, eleVal){
+      // change date to accept no preceding 0 on month and day
       if (eleVal){
         if (eleVal.length == 10) {
             if (new Date(eleVal) == "Invalid Date") {
