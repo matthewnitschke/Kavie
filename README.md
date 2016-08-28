@@ -151,7 +151,7 @@ You can also deactivate kavie after isValid()
 
 ```javascript
 Kavie.deactivate(self); // will deactivate the entire viewModel
-Kavie.deactivateSection(Kavie.sections["basicInfo"]) // will deactivate just the basicInfo section
+Kavie.deactivateSection("basicInfo"); // will deactivate just the basicInfo section
 ```
 
 #Problems?
