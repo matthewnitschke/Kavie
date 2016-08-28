@@ -49,8 +49,8 @@ There are a few validation rules build in
 self.value = ko.observable().extend({
     kavie: {
       required: true, // [boolean] this one is obvious
-      max: 3, // [int] max amount of characters: 3
-      min: 2, // [int] amount of characters: 2
+      maxLength: 3, // [int] max amount of characters: 3
+      minLength: 2, // [int] min amount of characters: 2
       date: true, // [boolean] validates dates based on js dates
       birthdate: true, // [boolean] uses date, and must be in past with persons age less than 120
       phone: true, // [boolean] uses regex to validate a valid 10 digit phone number
@@ -60,6 +60,7 @@ self.value = ko.observable().extend({
     }
 });
 ```
+It is important to note that on the date, birthdate, phone, email, and numeric validators, if the users input is null, undefined, or empty they will return true. This is so you can still have optional values and use these validators. If you want them required, add the required validator.
 
 ##Custom Rules
 Custom rules are added as follows
@@ -158,6 +159,9 @@ Thanks of taking a look at kavie. If you have any problems let me know and I wou
 
 
 #Changelog
+
+### 0.5
+Few tweaks and refractoring. Added qunit tests, made majority of validation rules return true if empty, renamed min and max to minLength and maxLength 
 
 ### 0.4
 More new advanced features. Added section children which give you the ability to chain sections together
