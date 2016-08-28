@@ -44,36 +44,36 @@
   });
 
   QUnit.test("Max length validator function", function( assert ) {
-    var max = Kavie.validatorFunctions.max;
+    var maxLength = Kavie.validatorFunctions.maxLength;
 
     // false checks
-    assert.equal(max(1, "aa"), false, "2 letters, max of 1");
-    assert.equal(max(2, "123"), false, "3 numbers, max of 2");
-    assert.equal(max(3, "!@#$"), false, "4 symbols, max of 4");
+    assert.equal(maxLength(1, "aa"), false, "2 letters, max of 1");
+    assert.equal(maxLength(2, "123"), false, "3 numbers, max of 2");
+    assert.equal(maxLength(3, "!@#$"), false, "4 symbols, max of 4");
 
     // true checks
-    assert.equal(max(1, "a"), true, "1 letter, max of 1");
-    assert.equal(max(2, "12"), true, "2 numbers, max of 2");
-    assert.equal(max(3, "!@#"), true, "3 numbers, max of 3");
+    assert.equal(maxLength(1, "a"), true, "1 letter, max of 1");
+    assert.equal(maxLength(2, "12"), true, "2 numbers, max of 2");
+    assert.equal(maxLength(3, "!@#"), true, "3 numbers, max of 3");
 
     // msc
-    assert.equal(max(1, ""), true, "'' value, max of 1");
-    assert.equal(max(2, undefined), true, "undefined value, max of 2");
-    assert.equal(max(3, null), true, "null value, max of 3");
+    assert.equal(maxLength(1, ""), true, "'' value, max of 1");
+    assert.equal(maxLength(2, undefined), true, "undefined value, max of 2");
+    assert.equal(maxLength(3, null), true, "null value, max of 3");
   });
 
   QUnit.test("Min length validator function", function( assert ) {
-    var min = Kavie.validatorFunctions.min;
+    var minLength = Kavie.validatorFunctions.minLength;
 
     // false checks
-    assert.equal(min(3, "12"), false, "number[12] value, min of 3");
-    assert.equal(min(3, "as"), false, "letter[as] value, min of 3");
-    assert.equal(min(3, "!@"), false, "symbol[!@] value, min of 3");
+    assert.equal(minLength(3, "12"), false, "number[12] value, min of 3");
+    assert.equal(minLength(3, "as"), false, "letter[as] value, min of 3");
+    assert.equal(minLength(3, "!@"), false, "symbol[!@] value, min of 3");
 
     // true checks
-    assert.equal(min(4, "123456"), true, "number[123456] value, min of 4");
-    assert.equal(min(4, "asdf"), true, "letter[asdf] value, min of 4");
-    assert.equal(min(2, "!@#"), true, "symbol[!@#] value, min of 2");
+    assert.equal(minLength(4, "123456"), true, "number[123456] value, min of 4");
+    assert.equal(minLength(4, "asdf"), true, "letter[asdf] value, min of 4");
+    assert.equal(minLength(2, "!@#"), true, "symbol[!@#] value, min of 2");
   });
 
   QUnit.test("Matches validator function", function( assert ) {
@@ -105,7 +105,7 @@
     assert.equal(date(true, ""), true, "empty value")
   });
 
-  QUnit.test("Date validator function", function( assert ) {
+  QUnit.test("Birthdate validator function", function( assert ) {
     var birthdate = Kavie.validatorFunctions.birthdate;
 
     // false checks
@@ -122,7 +122,7 @@
     assert.equal(birthdate(true, "4/3/1997"), true, "regular date no preceding 0");
 
     // msc
-    assert.equal(date(true, ""), true, "empty value")
+    assert.equal(birthdate(true, ""), true, "empty value")
   });
 
   QUnit.test("Phone validator function", function(assert){
