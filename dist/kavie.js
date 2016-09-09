@@ -187,8 +187,6 @@
       } else {
         return true;
       }
-
-
     },
     phone: function (propVal, eleVal){
       if (propVal && hasValue(eleVal)){
@@ -246,6 +244,11 @@ ko.extenders.kavie = function (target, rules){
 
       Kavie.sections[localRules.section].observables.push(target);
       localRules.section = "";
+    }
+
+    if (localRules.message){
+      target.message = localRules.message;
+      localRules.message = "";
     }
 
     target.rules = localRules;
