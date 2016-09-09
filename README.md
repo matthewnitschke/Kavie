@@ -159,7 +159,7 @@ self.value = ko.observable().extends({
 ```
 ```html
 <input data-bind="textInput: value">
-<div data-bind="visible: value.hasError, text: value.message"></div>
+<div data-bind="text: value.errorMessage"></div>
 ```
 
 #Deactivate
