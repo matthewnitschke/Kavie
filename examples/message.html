@@ -13,7 +13,7 @@
   <div class="block">
     Required:<br>
     <input type="text" data-bind="textInput: value, css:{'validation-error': value.hasError}">
-    <div data-bind="visible: value.hasError, text: value.message"></div>
+    <div data-bind="text: value.errorMessage"></div>
   </div>
 
   <input type="button" data-bind="click: submit" value="Validate">

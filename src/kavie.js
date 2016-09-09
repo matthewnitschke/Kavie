@@ -266,7 +266,17 @@ ko.extenders.kavie = function (target, rules){
     }
 
     if (localRules.message){
+      // create a plain text message if one is supplied
       target.message = localRules.message;
+
+      // created a computed value that is the message if hasError is true
+      target.errorMessage = ko.computed(function(){
+        if (target.hasError()){
+          return target.message;
+        } else {
+          return "";
+        }
+      });
       localRules.message = "";
     }
 

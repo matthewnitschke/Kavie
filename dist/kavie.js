@@ -248,6 +248,14 @@ ko.extenders.kavie = function (target, rules){
 
     if (localRules.message){
       target.message = localRules.message;
+
+      target.errorMessage = ko.computed(function(){
+        if (target.hasError()){
+          return target.message;
+        } else {
+          return "";
+        }
+      });
       localRules.message = "";
     }
 
