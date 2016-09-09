@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 0.4.7
+    Version: 0.5.0
 */
 
 // This is a singleton pattern for the Kavie object to validate against
@@ -137,20 +137,20 @@
         }
     },
     numeric: function(propVal, eleVal){
-      if (propVal){
+      if (propVal && hasValue(eleVal)){
          return !isNaN(parseFloat(eleVal)) && isFinite(eleVal);
       } else {
         return true;
       }
 
     },
-    max: function (propVal, eleVal){
+    maxLength: function (propVal, eleVal){
       if (eleVal){
         return eleVal.length <= propVal;
       }
       return true; // if no value is found, it doesnt have a length. So thus it is less than the propVal
     },
-    min: function (propVal, eleVal){
+    minLength: function (propVal, eleVal){
       if (eleVal){
         return eleVal.length >= propVal;
       }
@@ -163,18 +163,21 @@
       return false;
     },
     date: function (propVal, eleVal){
-      if (eleVal){
-        if (eleVal.length == 10) {
+      // change date to accept no preceding 0 on month and day
+      if (propVal && hasValue(eleVal)){
+        if (eleVal.length >= 8 && eleVal.length <= 10) {
             if (new Date(eleVal) == "Invalid Date") {
                 return false;
             }
             return true;
         }
         return false;
+      } else {
+        return true;
       }
-      return false; // noting is an invalid date
     },
     birthdate: function (propVal, eleVal){
+      if (propVal && hasValue(eleVal)){
         // check to see if it is a valid date
         if (!Kavie.validatorFunctions.date(propVal, eleVal)) {
             return false;
@@ -194,33 +197,38 @@
         if (date < minDateAllowed){
             return false;
         }
-
         return true;
+
+      } else {
+        return true;
+      }
+
+
     },
     phone: function (propVal, eleVal){
-      if (eleVal){
+      if (propVal && hasValue(eleVal)){
         if (eleVal.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/)) {
             return true;
         } else {
             return false;
         }
+      } else {
+        return true;
       }
     },
     email: function (propVal, eleVal){
-      if (eleVal){
+      if (propVal && hasValue(eleVal)){
         if (eleVal.match(/^(?:(?:[\w`~!#$%^&*\-=+;:{}'|,?\/]+(?:(?:\.(?:"(?:\\?[\w`~!#$%^&*\-=+;:{}'|,?\/\.()<>\[\] @]|\\"|\\\\)*"|[\w`~!#$%^&*\-=+;:{}'|,?\/]+))*\.[\w`~!#$%^&*\-=+;:{}'|,?\/]+)?)|(?:"(?:\\?[\w`~!#$%^&*\-=+;:{}'|,?\/\.()<>\[\] @]|\\"|\\\\)+"))@(?:[a-zA-Z\d\-]+(?:\.[a-zA-Z\d\-]+)*|\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])$/)) {
             return true;
         } else {
             return false;
         }
+      } else {
+        return true;
       }
     },
     regexPattern: function(propVal, eleVal){
-      if (eleVal){
-        return eleVal.toString().match(propVal) !== null;
-      } else {
-        return false;
-      }
+      return eleVal.toString().match(propVal) !== null;
     }
   }
 

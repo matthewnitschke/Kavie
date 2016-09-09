@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Kavie tests</title>
+
+  <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css">
+  <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+
+  <script src="../node_modules/knockout/build/output/knockout-latest.js"></script>
+  <script src="../src/kavie.js"></script>
+
+
+  <script>
+
+  QUnit.test("Required validator function", function( assert ) {
+    var required = Kavie.validatorFunctions.required;
+
+    // false checks
+    assert.equal(required(true, ""), false, "empty value");
+    assert.equal(required(true, undefined), false, "undefined value");
+    assert.equal(required(true, null), false, "null value");
+
+    // true checks
+    assert.equal(required(true, "asdf"), true, "letters value");
+    assert.equal(required(true, "0"), true, "0 value");
+    assert.equal(required(true, "false"), true, "'false' string value");
+    assert.equal(required(true, false), true, "false boolean value");
+    assert.equal(required(true, true), true, "true boolean value");
+  });
+
+  QUnit.test("Numeric validator function", function( assert ) {
+    var numeric = Kavie.validatorFunctions.numeric;
+
+    // false checks
+    assert.equal(numeric(true, "a"), false, "letter[a] value");
+    assert.equal(numeric(true, "!"), false, "symbol[!] value");
+    assert.equal(numeric(true, "~"), false, "symbol[~] value");
+
+    // true checks
+    assert.equal(numeric(true, ""), true, "empty value");
+    assert.equal(numeric(true, "1"), true, "number[1] value");
+    assert.equal(numeric(true, "123"), true, "number[123] value");
+  });
+
+  QUnit.test("Max length validator function", function( assert ) {
+    var maxLength = Kavie.validatorFunctions.maxLength;
+
+    // false checks
+    assert.equal(maxLength(1, "aa"), false, "2 letters, max of 1");
+    assert.equal(maxLength(2, "123"), false, "3 numbers, max of 2");
+    assert.equal(maxLength(3, "!@#$"), false, "4 symbols, max of 4");
+
+    // true checks
+    assert.equal(maxLength(1, "a"), true, "1 letter, max of 1");
+    assert.equal(maxLength(2, "12"), true, "2 numbers, max of 2");
+    assert.equal(maxLength(3, "!@#"), true, "3 numbers, max of 3");
+
+    // msc
+    assert.equal(maxLength(1, ""), true, "'' value, max of 1");
+    assert.equal(maxLength(2, undefined), true, "undefined value, max of 2");
+    assert.equal(maxLength(3, null), true, "null value, max of 3");
+  });
+
+  QUnit.test("Min length validator function", function( assert ) {
+    var minLength = Kavie.validatorFunctions.minLength;
+
+    // false checks
+    assert.equal(minLength(3, "12"), false, "number[12] value, min of 3");
+    assert.equal(minLength(3, "as"), false, "letter[as] value, min of 3");
+    assert.equal(minLength(3, "!@"), false, "symbol[!@] value, min of 3");
+
+    // true checks
+    assert.equal(minLength(4, "123456"), true, "number[123456] value, min of 4");
+    assert.equal(minLength(4, "asdf"), true, "letter[asdf] value, min of 4");
+    assert.equal(minLength(2, "!@#"), true, "symbol[!@#] value, min of 2");
+  });
+
+  QUnit.test("Matches validator function", function( assert ) {
+    var matches = Kavie.validatorFunctions.matches;
+
+    // false checks
+    assert.equal(matches("asdf", "erg"), false, "letter[asdf] value, matching of erg");
+
+    // true checks
+    assert.equal(matches("hula", "hula"), true, "letter[hula] value, matching of hula");
+  });
+
+  QUnit.test("Date validator function", function( assert ) {
+    var date = Kavie.validatorFunctions.date;
+
+    // false checks
+    assert.equal(date(true, "ha"), false, "invalid date");
+    assert.equal(date(true, "13/03/2012"), false, "invalid month");
+    assert.equal(date(true, "1/60/2012"), false, "invalid day");
+    assert.equal(date(true, "1/60/23"), false, "invalid year");
+
+
+    // true checkss
+    assert.equal(date(true, "04/03/1997"), true, "regular date preceding 0 on month and day");
+    assert.equal(date(true, "4/3/1997"), true, "regular date no preceding 0");
+    assert.equal(date(true, "6/12/3030"), true, "future date");
+
+    // msc
+    assert.equal(date(true, ""), true, "empty value")
+  });
+
+  QUnit.test("Birthdate validator function", function( assert ) {
+    var birthdate = Kavie.validatorFunctions.birthdate;
+
+    // false checks
+    assert.equal(birthdate(true, "ha"), false, "invalid date");
+    assert.equal(birthdate(true, "13/03/2012"), false, "invalid month");
+    assert.equal(birthdate(true, "1/60/2012"), false, "invalid day");
+    assert.equal(birthdate(true, "1/60/23"), false, "invalid year");
+
+    assert.equal(birthdate(true, "6/12/3030"), false, "future date");
+    assert.equal(birthdate(true, "6/12/1800"), false, "super past date");
+
+    // true checkss
+    assert.equal(birthdate(true, "04/03/1997"), true, "regular date preceding 0 on month and day");
+    assert.equal(birthdate(true, "4/3/1997"), true, "regular date no preceding 0");
+
+    // msc
+    assert.equal(birthdate(true, ""), true, "empty value")
+  });
+
+  QUnit.test("Phone validator function", function(assert){
+    var phone = Kavie.validatorFunctions.phone;
+
+    // false checks
+    assert.equal(phone(true, "asd"), false, "invalid phone");
+
+    // true checks
+    assert.equal(phone(true, "406-999-9999"), true, "valid phone");
+
+    // msc
+    assert.equal(phone(true, ""), true, "empty value");
+  });
+
+  QUnit.test("Email validator function", function(assert){
+    var email = Kavie.validatorFunctions.email;
+
+    // false checkes
+    assert.equal(email(true, "asdf"), false, "invalid email");
+
+    // true checks
+    assert.equal(email(true, "test@test.com"), true, "valid email");
+
+    // msc
+    assert.equal(email(true, ""), true, "empty value");
+  });
+
+  QUnit.test("regexPattern validator function", function(assert){
+    var regex = Kavie.validatorFunctions.regexPattern;
+
+    assert.equal(regex(/([A-Z])\w+/, ""), false, "not matching regex");
+
+    assert.equal(regex(/([A-Z])\w+/, "Welcome"), true, "matching regex");
+  });
+
+
+  </script>
+</head>
+<body>
+
+  <div id="qunit"></div>
+
+</body>
+</html>

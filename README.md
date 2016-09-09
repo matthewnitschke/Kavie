@@ -1,14 +1,18 @@
 ![kavie-banner](https://cloud.githubusercontent.com/assets/6363089/13166491/cafa75c2-d685-11e5-8be8-3f878a9454f7.png)
 
 ## Why Kavie?
-Kavie is small (minified ~2kb), easy to use, and it works
+Kavie is small (minified ~3kb), easy to use, and it works
 
 ## Installation
-Simply copy the kavie.js file in dist into your project and reference it in your project
+You can download kavie from npm
+```
+npm install kavie
+```
 
+Then include it in your project after knockout js
 ```html
 <script src="/path/to/knockout.js"></script>
-<script src="/path/to/kavie.js"></script>
+<script src="/node_modules/kavie/dist/kavie.js"></script>
 ```
 
 # Usage
@@ -45,15 +49,18 @@ There are a few validation rules build in
 self.value = ko.observable().extend({
     kavie: {
       required: true, // [boolean] this one is obvious
-      max: 3, // [int] max amount of characters: 3
-      min: 2, // [int] amount of characters: 2
+      maxLength: 3, // [int] max amount of characters: 3
+      minLength: 2, // [int] min amount of characters: 2
       date: true, // [boolean] validates dates based on js dates
       birthdate: true, // [boolean] uses date, and must be in past with persons age less than 120
+      phone: true, // [boolean] uses regex to validate a valid 10 digit phone number
+      email: true, // [boolean] uses regex to validate a valid email
       numeric: true, // [boolean] must be an integer
       regexPattern: /([A-Z])\w+/ // [regex] matches a pattern
     }
 });
 ```
+It is important to note that on the date, birthdate, phone, email, and numeric validators, if the users input is null, undefined, or empty they will return true. This is so you can still have optional values and use these validators. If you want them required, add the required validator.
 
 ##Custom Rules
 Custom rules are added as follows
@@ -144,7 +151,7 @@ You can also deactivate kavie after isValid()
 
 ```javascript
 Kavie.deactivate(self); // will deactivate the entire viewModel
-Kavie.deactivate(Kavie.sections["basicInfo"]) // will deactivate just the basicInfo section
+Kavie.deactivateSection("basicInfo"); // will deactivate just the basicInfo section
 ```
 
 #Problems?
@@ -152,6 +159,9 @@ Thanks of taking a look at kavie. If you have any problems let me know and I wou
 
 
 #Changelog
+
+### 0.5
+Few tweaks and refractoring. Added qunit tests, made majority of validation rules return true if empty, renamed min and max to minLength and maxLength 
 
 ### 0.4
 More new advanced features. Added section children which give you the ability to chain sections together

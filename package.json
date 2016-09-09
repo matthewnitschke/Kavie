@@ -1,6 +1,6 @@
 {
   "name": "kavie",
-  "version": "0.4.7",
+  "version": "0.5.0",
   "description": "![kavie-banner](https://cloud.githubusercontent.com/assets/6363089/13166491/cafa75c2-d685-11e5-8be8-3f878a9454f7.png)",
   "main": "app.js",
   "directories": {
@@ -25,6 +25,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-strip-comments": "^2.4.3",
     "gulp-uglify": "^1.5.3",
-    "knockout": "^3.4.0"
+    "knockout": "^3.4.0",
+    "qunitjs": "^2.0.1"
   }
 }
