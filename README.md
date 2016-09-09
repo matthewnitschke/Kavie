@@ -146,6 +146,22 @@ self.submit = function(){
 }
 ```
 
+#Validation Messages
+You can supply a validation message to display to the user if the validation failed
+
+```javascript
+self.value = ko.observable().extends({
+  kavie: {
+    required: true,
+    message: "This value is required"
+  }
+});
+```
+```html
+<input data-bind="textInput: value">
+<div data-bind="visible: value.hasError, text: value.message"></div>
+```
+
 #Deactivate
 You can also deactivate kavie after isValid()
 
@@ -161,7 +177,7 @@ Thanks of taking a look at kavie. If you have any problems let me know and I wou
 #Changelog
 
 ### 0.5
-Few tweaks and refractoring. Added qunit tests, made majority of validation rules return true if empty, renamed min and max to minLength and maxLength 
+Added validation messages, added unit test for validation rules, made majority of validation rules return true if empty, renamed min and max to minLength and maxLength 
 
 ### 0.4
 More new advanced features. Added section children which give you the ability to chain sections together
