@@ -146,6 +146,22 @@ self.submit = function(){
 }
 ```
 
+#Validation Messages
+You can supply a validation message to display to the user if the validation failed
+
+```javascript
+self.value = ko.observable().extends({
+  kavie: {
+    required: true,
+    message: "This value is required"
+  }
+});
+```
+```html
+<input data-bind="textInput: value">
+<div data-bind="visible: value.hasError, text: value.message"></div>
+```
+
 #Deactivate
 You can also deactivate kavie after isValid()
 
