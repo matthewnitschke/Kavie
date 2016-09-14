@@ -118,32 +118,43 @@
   }
 
   ns.validatorFunctions = {
-    required: function (propVal, eleVal){
+    required: {
+      validator: function(propVal, eleVal){
         if (propVal) {
             return hasValue(eleVal);
         } else {
             return true;
         }
+      },
+      message: "This field is required"
     },
-    numeric: function(propVal, eleVal){
-      if (propVal && hasValue(eleVal)){
-         return !isNaN(parseFloat(eleVal)) && isFinite(eleVal);
-      } else {
-        return true;
-      }
-
+    numeric: {
+      validator: function(propVal, eleVal){
+        if (propVal && hasValue(eleVal)){
+           return !isNaN(parseFloat(eleVal)) && isFinite(eleVal);
+        } else {
+          return true;
+        }
+      },
+      message: "Please enter a numeric value"
     },
-    maxLength: function (propVal, eleVal){
-      if (eleVal){
-        return eleVal.length <= propVal;
-      }
-      return true; 
+    maxLength: {
+      validator: function (propVal, eleVal){
+        if (eleVal){
+          return eleVal.length <= propVal;
+        }
+        return true; 
+      },
+      message: "Please enter a value less than or equal to {propVal}"
     },
-    minLength: function (propVal, eleVal){
-      if (eleVal){
-        return eleVal.length >= propVal;
-      }
-      return false; 
+    minLength:{
+      validator: function(propVal, eleVal){
+          if (eleVal){
+            return eleVal.length >= propVal;
+          }
+          return false; 
+      },
+      message: "Please enter a value greater than or equal to {propVal}"
     },
     matches: function(propVal, eleVal){
       if (ko.unwrap(propVal) == ko.unwrap(eleVal)){
@@ -151,64 +162,76 @@
       }
       return false;
     },
-    date: function (propVal, eleVal){
-      if (propVal && hasValue(eleVal)){
-        if (eleVal.length >= 8 && eleVal.length <= 10) {
-            if (new Date(eleVal) == "Invalid Date") {
-                return false;
-            }
-            return true;
-        }
-        return false;
-      } else {
-        return true;
-      }
-    },
-    birthdate: function (propVal, eleVal){
-      if (propVal && hasValue(eleVal)){
-        if (!Kavie.validatorFunctions.date(propVal, eleVal)) {
-            return false;
-        }
-
-        var date = new Date(eleVal);
-
-        if (date > new Date()){
-            return false;
-        }
-
-        var minDateAllowed = new Date();
-        minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); 
-
-        if (date < minDateAllowed){
-            return false;
-        }
-        return true;
-
-      } else {
-        return true;
-      }
-    },
-    phone: function (propVal, eleVal){
-      if (propVal && hasValue(eleVal)){
-        if (eleVal.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/)) {
-            return true;
+    date: {
+      validator: function (propVal, eleVal){
+        if (propVal && hasValue(eleVal)){
+          if (eleVal.length >= 8 && eleVal.length <= 10) {
+              if (new Date(eleVal) == "Invalid Date") {
+                  return false;
+              }
+              return true;
+          }
+          return false;
         } else {
-            return false;
+          return true;
         }
-      } else {
-        return true;
-      }
+      },
+      message: "Please enter a valid date"
     },
-    email: function (propVal, eleVal){
-      if (propVal && hasValue(eleVal)){
-        if (eleVal.match(/^(?:(?:[\w`~!#$%^&*\-=+;:{}'|,?\/]+(?:(?:\.(?:"(?:\\?[\w`~!#$%^&*\-=+;:{}'|,?\/\.()<>\[\] @]|\\"|\\\\)*"|[\w`~!#$%^&*\-=+;:{}'|,?\/]+))*\.[\w`~!#$%^&*\-=+;:{}'|,?\/]+)?)|(?:"(?:\\?[\w`~!#$%^&*\-=+;:{}'|,?\/\.()<>\[\] @]|\\"|\\\\)+"))@(?:[a-zA-Z\d\-]+(?:\.[a-zA-Z\d\-]+)*|\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])$/)) {
-            return true;
+    birthdate: {
+      validator: function (propVal, eleVal){
+        if (propVal && hasValue(eleVal)){
+          if (!Kavie.validatorFunctions.date(propVal, eleVal)) {
+              return false;
+          }
+
+          var date = new Date(eleVal);
+
+          if (date > new Date()){
+              return false;
+          }
+
+          var minDateAllowed = new Date();
+          minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); 
+
+          if (date < minDateAllowed){
+              return false;
+          }
+          return true;
+
         } else {
-            return false;
+          return true;
         }
-      } else {
-        return true;
-      }
+      },
+      message: "Please enter a valid birthdate"
+    },
+    phone: {
+      validator: function (propVal, eleVal){
+        if (propVal && hasValue(eleVal)){
+          if (eleVal.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/)) {
+              return true;
+          } else {
+              return false;
+          }
+        } else {
+          return true;
+        }
+      },
+      message: "Please enter a valid phone number"
+    },
+    email: {
+      validator: function (propVal, eleVal){
+        if (propVal && hasValue(eleVal)){
+          if (eleVal.match(/^(?:(?:[\w`~!#$%^&*\-=+;:{}'|,?\/]+(?:(?:\.(?:"(?:\\?[\w`~!#$%^&*\-=+;:{}'|,?\/\.()<>\[\] @]|\\"|\\\\)*"|[\w`~!#$%^&*\-=+;:{}'|,?\/]+))*\.[\w`~!#$%^&*\-=+;:{}'|,?\/]+)?)|(?:"(?:\\?[\w`~!#$%^&*\-=+;:{}'|,?\/\.()<>\[\] @]|\\"|\\\\)+"))@(?:[a-zA-Z\d\-]+(?:\.[a-zA-Z\d\-]+)*|\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])$/)) {
+              return true;
+          } else {
+              return false;
+          }
+        } else {
+          return true;
+        }
+      },
+      message: "Please enter a valid email address"
     },
     regexPattern: function(propVal, eleVal){
       return eleVal.toString().match(propVal) !== null;
@@ -236,6 +259,7 @@ ko.extenders.kavie = function (target, rules){
     var localRules = rules;
 
     target.hasError = ko.observable(); 
+    target.errorMessage = ko.observable();
 
     if (localRules.section){
       if (!Kavie.sections[localRules.section]){
@@ -246,19 +270,6 @@ ko.extenders.kavie = function (target, rules){
       localRules.section = "";
     }
 
-    if (localRules.message){
-      target.message = localRules.message;
-
-      target.errorMessage = ko.computed(function(){
-        if (target.hasError()){
-          return target.message;
-        } else {
-          return "";
-        }
-      });
-      localRules.message = "";
-    }
-
     target.rules = localRules;
 
     function validate(newValue){
@@ -267,11 +278,27 @@ ko.extenders.kavie = function (target, rules){
         for (key in rules){
             for (funcKey in Kavie.validatorFunctions){
                 if (key == funcKey) {
-                    var isValid = Kavie.validatorFunctions[funcKey](rules[key], newValue);
-                    if (!isValid) {
-                        target.hasError(true);
-                        return;
+                  var validatorFunction;
+                  if (typeof Kavie.validatorFunctions[funcKey] === "function"){
+                    validatorFunction = Kavie.validatorFunctions[funcKey];
+                  } else {
+                    validatorFunction = Kavie.validatorFunctions[funcKey].validator;
+                  }
+
+                  var isValid = validatorFunction(rules[key], newValue);
+                  if (!isValid) {
+                    if (Kavie.validatorFunctions[funcKey].message){
+                      target.errorMessage(Kavie.validatorFunctions[funcKey].message.replace("{propVal}", rules[key]));
+                    } else {
+                      target.errorMessage("");
                     }
+
+                    target.hasError(true);
+                    return;
+
+                  } else {
+                    target.errorMessage("");
+                  }
                 }
             }
         }
@@ -290,6 +317,7 @@ ko.extenders.kavie = function (target, rules){
         target.subscription.dispose();
       }
       target.hasError(false);
+      target.errorMessage("");
     }
 
     return target;

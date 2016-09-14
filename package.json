@@ -1,6 +1,6 @@
 {
   "name": "kavie",
-  "version": "0.5.2",
+  "version": "0.6",
   "description": "![kavie-banner](https://cloud.githubusercontent.com/assets/6363089/13166491/cafa75c2-d685-11e5-8be8-3f878a9454f7.png)",
   "main": "app.js",
   "directories": {
@@ -19,7 +19,9 @@
     "url": "https://github.com/mattNit/Kavie/issues"
   },
   "homepage": "https://github.com/mattNit/Kavie#readme",
-  "dependencies": {},
+  "dependencies": {
+    "gulp-util": "^3.0.7"
+  },
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-rename": "^1.2.2",

@@ -129,32 +129,43 @@
   // built in validator functions
   // general rule for these is if empty, return true (if you want it required, you can add the required function)
   ns.validatorFunctions = {
-    required: function (propVal, eleVal){
+    required: {
+      validator: function(propVal, eleVal){
         if (propVal) {
             return hasValue(eleVal);
         } else {
             return true;
         }
+      },
+      message: "This field is required"
     },
-    numeric: function(propVal, eleVal){
-      if (propVal && hasValue(eleVal)){
-         return !isNaN(parseFloat(eleVal)) && isFinite(eleVal);
-      } else {
-        return true;
-      }
-
+    numeric: {
+      validator: function(propVal, eleVal){
+        if (propVal && hasValue(eleVal)){
+           return !isNaN(parseFloat(eleVal)) && isFinite(eleVal);
+        } else {
+          return true;
+        }
+      },
+      message: "Please enter a numeric value"
     },
-    maxLength: function (propVal, eleVal){
-      if (eleVal){
-        return eleVal.length <= propVal;
-      }
-      return true; // if no value is found, it doesnt have a length. So thus it is less than the propVal
+    maxLength: {
+      validator: function (propVal, eleVal){
+        if (eleVal){
+          return eleVal.length <= propVal;
+        }
+        return true; // if no value is found, it doesnt have a length. So thus it is less than the propVal
+      },
+      message: "Please enter a value less than or equal to {propVal}"
     },
-    minLength: function (propVal, eleVal){
-      if (eleVal){
-        return eleVal.length >= propVal;
-      }
-      return false; // opposite from above
+    minLength:{
+      validator: function(propVal, eleVal){
+          if (eleVal){
+            return eleVal.length >= propVal;
+          }
+          return false; // opposite from above
+      },
+      message: "Please enter a value greater than or equal to {propVal}"
     },
     matches: function(propVal, eleVal){
       if (ko.unwrap(propVal) == ko.unwrap(eleVal)){
@@ -162,68 +173,80 @@
       }
       return false;
     },
-    date: function (propVal, eleVal){
-      // change date to accept no preceding 0 on month and day
-      if (propVal && hasValue(eleVal)){
-        if (eleVal.length >= 8 && eleVal.length <= 10) {
-            if (new Date(eleVal) == "Invalid Date") {
-                return false;
-            }
-            return true;
-        }
-        return false;
-      } else {
-        return true;
-      }
-    },
-    birthdate: function (propVal, eleVal){
-      if (propVal && hasValue(eleVal)){
-        // check to see if it is a valid date
-        if (!Kavie.validatorFunctions.date(propVal, eleVal)) {
-            return false;
-        }
-
-        var date = new Date(eleVal);
-
-        // check to see if the date is in the future
-        if (date > new Date()){
-            return false;
-        }
-
-        // check to see if date is a rational birthdate
-        var minDateAllowed = new Date();
-        minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); // 120 is age of oldest person allowd
-
-        if (date < minDateAllowed){
-            return false;
-        }
-        return true;
-
-      } else {
-        return true;
-      }
-    },
-    phone: function (propVal, eleVal){
-      if (propVal && hasValue(eleVal)){
-        if (eleVal.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/)) {
-            return true;
+    date: {
+      validator: function (propVal, eleVal){
+        // change date to accept no preceding 0 on month and day
+        if (propVal && hasValue(eleVal)){
+          if (eleVal.length >= 8 && eleVal.length <= 10) {
+              if (new Date(eleVal) == "Invalid Date") {
+                  return false;
+              }
+              return true;
+          }
+          return false;
         } else {
-            return false;
+          return true;
         }
-      } else {
-        return true;
-      }
+      },
+      message: "Please enter a valid date"
     },
-    email: function (propVal, eleVal){
-      if (propVal && hasValue(eleVal)){
-        if (eleVal.match(/^(?:(?:[\w`~!#$%^&*\-=+;:{}'|,?\/]+(?:(?:\.(?:"(?:\\?[\w`~!#$%^&*\-=+;:{}'|,?\/\.()<>\[\] @]|\\"|\\\\)*"|[\w`~!#$%^&*\-=+;:{}'|,?\/]+))*\.[\w`~!#$%^&*\-=+;:{}'|,?\/]+)?)|(?:"(?:\\?[\w`~!#$%^&*\-=+;:{}'|,?\/\.()<>\[\] @]|\\"|\\\\)+"))@(?:[a-zA-Z\d\-]+(?:\.[a-zA-Z\d\-]+)*|\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])$/)) {
-            return true;
+    birthdate: {
+      validator: function (propVal, eleVal){
+        if (propVal && hasValue(eleVal)){
+          // check to see if it is a valid date
+          if (!Kavie.validatorFunctions.date(propVal, eleVal)) {
+              return false;
+          }
+
+          var date = new Date(eleVal);
+
+          // check to see if the date is in the future
+          if (date > new Date()){
+              return false;
+          }
+
+          // check to see if date is a rational birthdate
+          var minDateAllowed = new Date();
+          minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); // 120 is age of oldest person allowd
+
+          if (date < minDateAllowed){
+              return false;
+          }
+          return true;
+
         } else {
-            return false;
+          return true;
         }
-      } else {
-        return true;
-      }
+      },
+      message: "Please enter a valid birthdate"
+    },
+    phone: {
+      validator: function (propVal, eleVal){
+        if (propVal && hasValue(eleVal)){
+          if (eleVal.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/)) {
+              return true;
+          } else {
+              return false;
+          }
+        } else {
+          return true;
+        }
+      },
+      message: "Please enter a valid phone number"
+    },
+    email: {
+      validator: function (propVal, eleVal){
+        if (propVal && hasValue(eleVal)){
+          if (eleVal.match(/^(?:(?:[\w`~!#$%^&*\-=+;:{}'|,?\/]+(?:(?:\.(?:"(?:\\?[\w`~!#$%^&*\-=+;:{}'|,?\/\.()<>\[\] @]|\\"|\\\\)*"|[\w`~!#$%^&*\-=+;:{}'|,?\/]+))*\.[\w`~!#$%^&*\-=+;:{}'|,?\/]+)?)|(?:"(?:\\?[\w`~!#$%^&*\-=+;:{}'|,?\/\.()<>\[\] @]|\\"|\\\\)+"))@(?:[a-zA-Z\d\-]+(?:\.[a-zA-Z\d\-]+)*|\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])$/)) {
+              return true;
+          } else {
+              return false;
+          }
+        } else {
+          return true;
+        }
+      },
+      message: "Please enter a valid email address"
     },
     regexPattern: function(propVal, eleVal){
       return eleVal.toString().match(propVal) !== null;
@@ -254,6 +277,7 @@ ko.extenders.kavie = function (target, rules){
     var localRules = rules;
 
     target.hasError = ko.observable(); // tracks whether this observable is valid or not
+    target.errorMessage = ko.observable();
 
     // if section exsists add observable to it
     if (localRules.section){
@@ -263,21 +287,6 @@ ko.extenders.kavie = function (target, rules){
 
       Kavie.sections[localRules.section].observables.push(target);
       localRules.section = "";
-    }
-
-    if (localRules.message){
-      // create a plain text message if one is supplied
-      target.message = localRules.message;
-
-      // created a computed value that is the message if hasError is true
-      target.errorMessage = ko.computed(function(){
-        if (target.hasError()){
-          return target.message;
-        } else {
-          return "";
-        }
-      });
-      localRules.message = "";
     }
 
     // add the passed in rules to the observable
@@ -290,11 +299,27 @@ ko.extenders.kavie = function (target, rules){
         for (key in rules){
             for (funcKey in Kavie.validatorFunctions){
                 if (key == funcKey) {
-                    var isValid = Kavie.validatorFunctions[funcKey](rules[key], newValue);
-                    if (!isValid) {
-                        target.hasError(true);
-                        return;
+                  var validatorFunction;
+                  if (typeof Kavie.validatorFunctions[funcKey] === "function"){
+                    validatorFunction = Kavie.validatorFunctions[funcKey];
+                  } else {
+                    validatorFunction = Kavie.validatorFunctions[funcKey].validator;
+                  }
+
+                  var isValid = validatorFunction(rules[key], newValue);
+                  if (!isValid) {
+                    if (Kavie.validatorFunctions[funcKey].message){
+                      target.errorMessage(Kavie.validatorFunctions[funcKey].message.replace("{propVal}", rules[key]));
+                    } else {
+                      target.errorMessage("");
                     }
+
+                    target.hasError(true);
+                    return;
+
+                  } else {
+                    target.errorMessage("");
+                  }
                 }
             }
         }
@@ -313,6 +338,7 @@ ko.extenders.kavie = function (target, rules){
         target.subscription.dispose();
       }
       target.hasError(false);
+      target.errorMessage("");
     }
 
     return target;
