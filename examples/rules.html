@@ -13,6 +13,7 @@
   <div class="block">
     Required:<br>
     <input type="text" data-bind="textInput: required, css:{'validation-error': required.hasError}">
+    <div data-bind="text: required.errorMessage"></div>
   </div>
 
   <div class="block">
@@ -23,6 +24,7 @@
   <div class="block">
     Max:<br>
     <input type="text" data-bind="textInput: max, css:{'validation-error': max.hasError}">
+    <div data-bind="text: max.errorMessage"></div>
   </div>
 
   <div class="block">
