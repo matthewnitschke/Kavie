@@ -77,7 +77,7 @@ Kavie.validatorFunctions.isYea = {
       return false
     }
   },
-  // a (optional) message that can be displayed to the user if validation fails
+  // an (optional) message that can be displayed to the user if validation fails
   message: "Your text is not isYea {propVal}" 
 }
 ```
