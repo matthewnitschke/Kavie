@@ -66,17 +66,23 @@ It is important to note that on the date, birthdate, phone, email, and numeric v
 Custom rules are added as follows
 
 ```javascript
-Kavie.validatorFunctions.isYea = function(propVal, eleVal){
-  // propVal is the value passed in from the ko.extend()
-  // eleVal is the value being passed in from the observable
-
-  if (eleVal == "Yea"){
-    return true;
-  } else {
-    return false
-  }
+Kavie.validatorFunctions.isYea = {
+  validator: function(propVal, eleVal){
+    // propVal is the value passed in from the ko.extend()
+    // eleVal is the value being passed in from the observable
+  
+    if (eleVal == "Yea"){
+      return true;
+    } else {
+      return false
+    }
+  },
+  // a (optional) message that can be displayed to the user if validation fails
+  message: "Your text is not isYea {propVal}" 
 }
 ```
+All Kavie validatorFunctions are top down when it comes to priority. Meaning validator functions added before others will have their messages displayed first
+
 #Sections
 Sections in kavie are ways to validate different parts of a view model.
 
@@ -147,20 +153,13 @@ self.submit = function(){
 ```
 
 #Validation Messages
-You can supply a validation message to display to the user if the validation failed
+You can use a validation message to display to the user if the validation failed
 
-```javascript
-self.value = ko.observable().extends({
-  kavie: {
-    required: true,
-    message: "This value is required"
-  }
-});
-```
 ```html
 <input data-bind="textInput: value">
 <div data-bind="text: value.errorMessage"></div>
 ```
+These validation messages are stored on the validators see the Custom Rules section for more information
 
 #Deactivate
 You can also deactivate kavie after isValid()
@@ -175,6 +174,8 @@ Thanks of taking a look at kavie. If you have any problems let me know and I wou
 
 
 #Changelog
+### 0.6
+Revamp of the validation messages system
 
 ### 0.5
 Added validation messages, added unit test for validation rules, made majority of validation rules return true if empty, renamed min and max to minLength and maxLength 
