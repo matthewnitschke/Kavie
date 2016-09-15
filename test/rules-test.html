@@ -14,7 +14,7 @@
   <script>
 
   QUnit.test("Required validator function", function( assert ) {
-    var required = Kavie.validatorFunctions.required;
+    var required = Kavie.validatorFunctions.required.validator;
 
     // false checks
     assert.equal(required(true, ""), false, "empty value");
@@ -30,7 +30,7 @@
   });
 
   QUnit.test("Numeric validator function", function( assert ) {
-    var numeric = Kavie.validatorFunctions.numeric;
+    var numeric = Kavie.validatorFunctions.numeric.validator;
 
     // false checks
     assert.equal(numeric(true, "a"), false, "letter[a] value");
@@ -44,7 +44,7 @@
   });
 
   QUnit.test("Max length validator function", function( assert ) {
-    var maxLength = Kavie.validatorFunctions.maxLength;
+    var maxLength = Kavie.validatorFunctions.maxLength.validator;
 
     // false checks
     assert.equal(maxLength(1, "aa"), false, "2 letters, max of 1");
@@ -63,7 +63,7 @@
   });
 
   QUnit.test("Min length validator function", function( assert ) {
-    var minLength = Kavie.validatorFunctions.minLength;
+    var minLength = Kavie.validatorFunctions.minLength.validator;
 
     // false checks
     assert.equal(minLength(3, "12"), false, "number[12] value, min of 3");
@@ -87,7 +87,7 @@
   });
 
   QUnit.test("Date validator function", function( assert ) {
-    var date = Kavie.validatorFunctions.date;
+    var date = Kavie.validatorFunctions.date.validator;
 
     // false checks
     assert.equal(date(true, "ha"), false, "invalid date");
@@ -106,7 +106,7 @@
   });
 
   QUnit.test("Birthdate validator function", function( assert ) {
-    var birthdate = Kavie.validatorFunctions.birthdate;
+    var birthdate = Kavie.validatorFunctions.birthdate.validator;
 
     // false checks
     assert.equal(birthdate(true, "ha"), false, "invalid date");
@@ -126,7 +126,7 @@
   });
 
   QUnit.test("Phone validator function", function(assert){
-    var phone = Kavie.validatorFunctions.phone;
+    var phone = Kavie.validatorFunctions.phone.validator;
 
     // false checks
     assert.equal(phone(true, "asd"), false, "invalid phone");
@@ -139,7 +139,7 @@
   });
 
   QUnit.test("Email validator function", function(assert){
-    var email = Kavie.validatorFunctions.email;
+    var email = Kavie.validatorFunctions.email.validator;
 
     // false checkes
     assert.equal(email(true, "asdf"), false, "invalid email");

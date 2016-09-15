@@ -194,7 +194,7 @@
       validator: function (propVal, eleVal){
         if (propVal && hasValue(eleVal)){
           // check to see if it is a valid date
-          if (!Kavie.validatorFunctions.date(propVal, eleVal)) {
+          if (!Kavie.validatorFunctions.date.validator(propVal, eleVal)) {
               return false;
           }
 

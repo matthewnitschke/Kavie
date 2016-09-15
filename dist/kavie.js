@@ -181,7 +181,7 @@
     birthdate: {
       validator: function (propVal, eleVal){
         if (propVal && hasValue(eleVal)){
-          if (!Kavie.validatorFunctions.date(propVal, eleVal)) {
+          if (!Kavie.validatorFunctions.date.validator(propVal, eleVal)) {
               return false;
           }
 
