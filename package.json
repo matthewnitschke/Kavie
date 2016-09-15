@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/mattNit/Kavie#readme",
   "dependencies": {
-    "gulp-util": "^3.0.7"
+
   },
   "devDependencies": {
     "gulp": "^3.9.1",
@@ -28,6 +28,7 @@
     "gulp-strip-comments": "^2.4.3",
     "gulp-uglify": "^1.5.3",
     "knockout": "^3.4.0",
-    "qunitjs": "^2.0.1"
+    "qunitjs": "^2.0.1",
+    "gulp-util": "^3.0.7"
   }
 }
