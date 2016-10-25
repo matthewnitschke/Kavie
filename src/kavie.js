@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 0.6.0
+    Version: 0.6.2
 */
 
 // This is a singleton pattern for the Kavie object to validate against
