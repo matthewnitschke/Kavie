@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kavie</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="../node_modules/knockout/build/output/knockout-latest.js"></script>
+  <script src="../src/kavie.js"></script>
+
+</head>
+<body>
+  <div class="block">
+    Is Even: <br>
+    <input type="text" data-bind="textInput: value, css:{'validation-error': value.hasError}">
+  </div>
+
+  <input type="button" data-bind="click: submit" value="Validate">
+
+  <script>
+
+    Kavie.validatorFunctions.evenNumber = {
+      validator: function(propVal, eleVal){
+        if (propVal){
+          return (eleVal % 2 == 0);
+        }
+      },
+      message: "The number is odd"
+    }
+
+    function ViewModel(){
+      var self = this;
+
+      self.value = ko.observable().extend({
+        kavie: {
+          numeric: true,
+          evenNumber: true
+        }
+      });
+
+      self.submit = function(){
+        if (Kavie.isValid(self)){
+          console.log("All Good!");
+        } else{
+          console.log("Oh No!");
+        }
+      }
+    }
+    ko.applyBindings(new ViewModel());
+  </script>
+</body>
+</html>
