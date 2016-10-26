@@ -42,6 +42,15 @@ Kavie works by adding a hasError variable to the observable. This gives the flex
 <span data-bind="visible: value.hasError">Uh Oh! There was an error!</span>
 ```
 
+#Validation Messages
+You can use a validation message to display to the user if the validation failed
+
+```html
+<input data-bind="textInput: value">
+<div data-bind="text: value.errorMessage"></div>
+```
+These validation messages are stored on the validators see the Custom Rules section for more information
+
 #Validation rules
 There are a few validation rules build in
 
@@ -101,13 +110,15 @@ self.valueTwo = ko.observable().extend({
     }
 });
 
+// some other observable in the same viewmodel
 self.otherValue = ko.observable().extend({
   kavie: {
     required: true
   }
 })
 
-// validates all observables in the basicInfo section, will not validate the "otherValue" observable
+// validates all observables in the basicInfo section
+// it will not validate the "otherValue" observable as it is not in the basicInfo section
 self.isSectionValid("basicInfo"); 
 ```
 
@@ -158,15 +169,6 @@ self.submit = function(){
 }
 ```
 
-#Validation Messages
-You can use a validation message to display to the user if the validation failed
-
-```html
-<input data-bind="textInput: value">
-<div data-bind="text: value.errorMessage"></div>
-```
-These validation messages are stored on the validators see the Custom Rules section for more information
-
 #Deactivate
 You can also deactivate kavie after isValid()
 
@@ -179,7 +181,7 @@ Kavie.deactivateSection("basicInfo"); // will deactivate just the basicInfo sect
 Thanks of taking a look at kavie. If you have any problems let me know and I would love to help you out
 
 
-#Changelog
+## Changelog
 ### 0.6
 Revamp of the validation messages system
 
