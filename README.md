@@ -97,12 +97,18 @@ self.value = ko.observable().extend({
 self.valueTwo = ko.observable().extend({
     kavie: {
       required: true,
-      section: "otherInfo" // assign a kavieObservable to a different section
+      section: "basicInfo" // assign a kavieObservable to the same section
     }
 });
 
-self.isSectionValid("basicInfo"); // validate the first section
-self.isSectionValid("otherInfo"); // validate the second section
+self.otherValue = ko.observable().extend({
+  kavie: {
+    required: true
+  }
+})
+
+// validates all observables in the basicInfo section, will not validate the "otherValue" observable
+self.isSectionValid("basicInfo"); 
 ```
 
 ## Variable Validation
