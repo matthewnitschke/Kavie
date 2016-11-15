@@ -93,6 +93,14 @@
     parentSection.children[childSectionName] = new KavieSection();
   }
 
+  ns.resetValidation = function(vm){
+    var kavieObservables = compileObservables(vm);
+
+    for(var i = 0; i < kavieObservables.length; i ++){
+      kavieObservables[i].resetErrorMessages();
+    }
+  }
+
   var isKavieObservable = function(observable){
     return observable.hasOwnProperty("hasError");
   }
@@ -316,6 +324,11 @@ ko.extenders.kavie = function (target, rules){
       if (target.subscription){
         target.subscription.dispose();
       }
+      target.hasError(false);
+      target.errorMessage("");
+    }
+    
+    target.resetErrorMessages = function(){
       target.hasError(false);
       target.errorMessage("");
     }
