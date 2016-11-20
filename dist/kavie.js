@@ -9,6 +9,10 @@
 
   ns.sections = {};
 
+  ns.reset = function(){
+    ns.sections = {};
+  }
+
   ns.isValid = function(vm){
     var isValid = true;
 
@@ -36,9 +40,9 @@
 
       var children = Object.keys(section.children);
       for (var i = 0; i < children.length; i++) {
-        var childValid = ns.isSectionValid(children[i]);
+        var childValid = ns.isSectionValid(children[i]); 
 
-        if (!childValid) {
+        if (!childValid) { 
           isValid = false;
         }
       }
@@ -69,7 +73,7 @@
 
     var children = Object.keys(section.children);
     for(var i = 0; i < children.length; i ++){
-      ns.deactivateSection(children[i]);
+      ns.deactivateSection(children[i]); 
     }
 
     ns.deactivate(section.observables);
@@ -94,7 +98,7 @@
   }
 
   var isKavieObservable = function(observable){
-    return observable.hasOwnProperty("hasError");
+    return observable.hasOwnProperty("hasError"); 
   }
 
   var compileObservables = function(vm){
@@ -143,7 +147,7 @@
         if (eleVal){
           return eleVal.length <= propVal;
         }
-        return true;
+        return true; 
       },
       message: "Please enter a value less than or equal to {propVal}"
     },
@@ -152,7 +156,7 @@
           if (eleVal){
             return eleVal.length >= propVal;
           }
-          return false;
+          return false; 
       },
       message: "Please enter a value greater than or equal to {propVal}"
     },
@@ -192,7 +196,7 @@
           }
 
           var minDateAllowed = new Date();
-          minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120);
+          minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); 
 
           if (date < minDateAllowed){
               return false;
@@ -251,14 +255,14 @@ function KavieSection(){
 
   self.children = {};
 
-  self.validate = true;
+  self.validate = true; 
 }
 
 
 ko.extenders.kavie = function (target, rules){
     var localRules = rules;
 
-    target.hasError = ko.observable();
+    target.hasError = ko.observable(); 
     target.errorMessage = ko.observable();
 
     if (localRules.section){
@@ -308,7 +312,7 @@ ko.extenders.kavie = function (target, rules){
 
 
     target.startValidation = function(){
-        target.subscription = target.subscribe(validate);
+        target.subscription = target.subscribe(validate); 
         validate(target());
     }
 

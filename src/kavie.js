@@ -11,6 +11,10 @@
   // holds out observables and sections
   ns.sections = {};
 
+  ns.reset = function(){
+    ns.sections = {};
+  }
+
   // turn validaton on
   ns.isValid = function(vm){
     // vm can be a viewModel or a Kavie.section
