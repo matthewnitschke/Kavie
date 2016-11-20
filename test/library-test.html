@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Kavie Library Tests</title>
+
+  <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css">
+  <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+
+  <script src="../node_modules/knockout/build/output/knockout-latest.js"></script>
+  <script src="../src/kavie.js"></script>
+
+  <script>
+
+  QUnit.test("Basic Functionality", function(assert) {
+    Kavie.reset();
+    
+    var basicViewModel = {
+      value: ko.observable().extend({ kavie: { required: true, minLength: 2 } })
+    }
+
+    assert.equal(Kavie.isValid(basicViewModel), false);
+
+    basicViewModel.value("a"); // still doesnt work for minLength validator
+    assert.equal(Kavie.isValid(basicViewModel), false);
+
+    basicViewModel.value("abc"); // now it should be true
+    assert.equal(Kavie.isValid(basicViewModel), true);
+  });
+
+  QUnit.test("Sections Basics", function(assert){
+    Kavie.reset();
+
+    var vm = {
+      sectionValue: ko.observable().extend({
+        kavie: {
+          required: true,
+          section: "section"
+        }
+      }),
+
+      sectionValueTwo: ko.observable().extend({
+        kavie: {
+          required: true,
+          section: "section"
+        }
+      }),
+
+      otherValue: ko.observable().extend({
+        kavie: { required: true }
+      }),
+    }
+
+    assert.equal(Kavie.isSectionValid("section"), false);
+
+    vm.sectionValue("er");
+    vm.sectionValueTwo("er");
+
+    assert.equal(Kavie.isSectionValid("section"), true);
+
+    assert.equal(Kavie.isValid(vm), false);
+
+    vm.otherValue(true);
+
+    assert.equal(Kavie.isValid(vm), true);
+
+  });
+
+  QUnit.test("Variable Sections", function(assert){
+    Kavie.reset();
+
+    var vm = {
+      sectionValue: ko.observable().extend({
+        kavie: {
+          required: true,
+          section: "section"
+        }
+      }),
+      validate: ko.observable(false)
+    }
+
+    Kavie.addVariableValidation("section", vm.validate);
+
+    assert.equal(Kavie.isSectionValid("section"), true);
+
+    vm.validate(true);
+
+    assert.equal(Kavie.isSectionValid("section"), false);
+  });
+
+  QUnit.test("Children Sections", function(assert){
+    Kavie.reset();
+
+    var vm = {
+      value: ko.observable().extend({
+        kavie: {
+          required: true,
+          section: "parent"
+        }
+      }),
+      valueTwo: ko.observable().extend({
+        kavie: {
+          required: true,
+          section: "child"
+        }
+      })
+    }
+
+    Kavie.addSectionChild("parent", "child");
+
+    assert.equal(Kavie.isSectionValid("parent"), false);
+    vm.value("asdf");
+    assert.equal(Kavie.isSectionValid("parent"), false);
+    vm.valueTwo("asdf");
+    assert.equal(Kavie.isSectionValid("parent"), true);
+
+  });
+
+  </script>
+
+</head>
+<body>
+    <div id="qunit"></div>
+</body>
+</html>
