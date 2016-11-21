@@ -182,6 +182,9 @@ Thanks of taking a look at kavie. If you have any problems let me know and I wou
 
 
 ## Changelog
+### 1.0
+Finally felt comfortable with the software to pull it out of beta. Also wrote some tests for both validation methods and the library its self
+
 ### 0.6
 Revamp of the validation messages system
 
