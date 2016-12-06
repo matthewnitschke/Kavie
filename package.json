@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/mattNit/Kavie#readme",
   "dependencies": {
-
+    "promise-polyfill": "^6.0.2"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

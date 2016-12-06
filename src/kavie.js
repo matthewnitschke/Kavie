@@ -35,6 +35,21 @@
     return isValid;
   }
 
+  ns.isValidAsync = function(vm){
+    var kavieObservables = compileObservables(vm);
+    var promises = [];
+
+    for(var i = 0; i < kavieObservables.length; i ++){
+      var promise = kavieObservables[i].startAsyncValidation();
+
+      if (promise){ // if promise is undefined, then there are no async rules on that observable
+          promises = promises.concat(promise);
+      }
+    }
+
+    return Promise.allBool(promises);
+  }
+
   ns.isSectionValid = function(sectionName){
     var section = ns.sections[sectionName];
 
@@ -298,11 +313,12 @@ ko.extenders.kavie = function (target, rules){
 
     // Simply checks each rule attached to this observable and changes hasError variable
     function validate(newValue){
-        var rules = target.rules;
+      var rules = target.rules;
 
-        for (key in rules){
-            for (funcKey in Kavie.validatorFunctions){
-                if (key == funcKey) {
+      for (key in rules){
+          for (funcKey in Kavie.validatorFunctions){
+              if (key == funcKey) {
+                if (!Kavie.validatorFunctions[key].async){
                   var validatorFunction;
                   if (typeof Kavie.validatorFunctions[funcKey] === "function"){
                     validatorFunction = Kavie.validatorFunctions[funcKey];
@@ -311,30 +327,75 @@ ko.extenders.kavie = function (target, rules){
                   }
 
                   var isValid = validatorFunction(rules[key], newValue);
-                  if (!isValid) {
-                    if (Kavie.validatorFunctions[funcKey].message){
-                      target.errorMessage(Kavie.validatorFunctions[funcKey].message.replace("{propVal}", rules[key]));
+
+                  setValidationResult(isValid, key);
+                }
+              }
+          }
+      }
+    }
+
+    // async version of validating
+    function validateAsync(newValue){
+        var rules = target.rules;
+
+        var promises = [];
+
+        for (key in rules){
+            for (funcKey in Kavie.validatorFunctions){
+                if (key == funcKey) {
+                  if (Kavie.validatorFunctions[key].async){
+                    var validatorFunction;
+                    if (typeof Kavie.validatorFunctions[funcKey] === "function"){
+                      validatorFunction = Kavie.validatorFunctions[funcKey];
                     } else {
-                      target.errorMessage("");
+                      validatorFunction = Kavie.validatorFunctions[funcKey].validator;
                     }
 
-                    target.hasError(true);
-                    return;
+                    var promise = new Promise(function(callback){
+                      validatorFunction(rules[key], newValue, callback);
+                    }).then(function(isValid){
+                      setValidationResult(isValid, key);
+                      return isValid;
+                    });
 
-                  } else {
-                    target.errorMessage("");
+                    promises.push(promise);
                   }
                 }
             }
         }
 
-        target.hasError(false);
+        return promises;
     }
+
+    // Sets the result of the validation, hasError value and errorMessage
+    function setValidationResult(isValid, key){
+      if (!isValid) {
+        if (Kavie.validatorFunctions[funcKey].message){
+          target.errorMessage(Kavie.validatorFunctions[key].message.replace("{propVal}", target.rules[key]));
+        } else {
+          target.errorMessage("");
+        }
+
+        target.hasError(true);
+        return;
+
+      } else {
+        target.errorMessage("");
+        target.hasError(false);
+      }
+    }
+
 
 
     target.startValidation = function(){
         target.subscription = target.subscribe(validate); // creates a subscribable to update when value changes
         validate(target());
+    }
+
+    target.startAsyncValidation = function(){
+      target.subscription = target.subscribe(validateAsync);
+      return validateAsync(target());
     }
 
     target.stopValidation = function(){
@@ -347,3 +408,45 @@ ko.extenders.kavie = function (target, rules){
 
     return target;
 };
+
+// Minor modified version of Promise.all
+// Expects all promises to return a boolean
+// Returns a promise that resolves true if all promises returned true, false if any are false
+// Used in asyncValidation
+Promise.allBool = function (arr) {
+    var args = Array.prototype.slice.call(arr);
+
+    return new Promise(function (resolve, reject) {
+      if (args.length === 0) return resolve([]);
+      var remaining = args.length;
+
+      function res(i, val) {
+        try {
+          if (val && (typeof val === 'object' || typeof val === 'function')) {
+            var then = val.then;
+            if (typeof then === 'function') {
+              then.call(val, function (val) {
+                res(i, val);
+              }, reject);
+              return;
+            }
+          }
+          args[i] = val;
+          if (--remaining === 0) {
+            var containsFalse = args.indexOf(false);
+            if(containsFalse > -1){
+              resolve(false);
+            } else {
+              resolve(true);
+            }
+          }
+        } catch (ex) {
+          reject(ex);
+        }
+      }
+
+      for (var i = 0; i < args.length; i++) {
+        res(i, args[i]);
+      }
+    });
+  };
