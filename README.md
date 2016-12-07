@@ -1,7 +1,7 @@
 ![kavie-banner](https://cloud.githubusercontent.com/assets/6363089/13166491/cafa75c2-d685-11e5-8be8-3f878a9454f7.png)
 
 ## Why Kavie?
-Kavie is small (minified ~3kb), easy to use, and it works
+Kavie is small, easy to use, and it works
 
 ## Installation
 You can download kavie from npm
