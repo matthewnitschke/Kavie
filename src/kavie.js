@@ -47,7 +47,7 @@
       }
     }
 
-    return Promise.allBool(promises);
+    return promiseAllBool(promises);
   }
 
   ns.isSectionValid = function(sectionName){
@@ -276,6 +276,48 @@
      return !(value == null || value.length === 0);
   }
 
+  // Minor modified version of Promise.all
+  // Expects all promises to return a boolean
+  // Returns a promise that resolves true if all promises returned true, false if any are false
+  // Used in asyncValidation
+  var promiseAllBool = function (arr) {
+      var args = Array.prototype.slice.call(arr);
+
+      return new Promise(function (resolve, reject) {
+        if (args.length === 0) return resolve([]);
+        var remaining = args.length;
+
+        function res(i, val) {
+          try {
+            if (val && (typeof val === 'object' || typeof val === 'function')) {
+              var then = val.then;
+              if (typeof then === 'function') {
+                then.call(val, function (val) {
+                  res(i, val);
+                }, reject);
+                return;
+              }
+            }
+            args[i] = val;
+            if (--remaining === 0) {
+              var containsFalse = args.indexOf(false);
+              if(containsFalse > -1){
+                resolve(false);
+              } else {
+                resolve(true);
+              }
+            }
+          } catch (ex) {
+            reject(ex);
+          }
+        }
+
+        for (var i = 0; i < args.length; i++) {
+          res(i, args[i]);
+        }
+      });
+    };
+
 }(this.Kavie = this.Kavie || {}));
 
 function KavieSection(){
@@ -408,45 +450,3 @@ ko.extenders.kavie = function (target, rules){
 
     return target;
 };
-
-// Minor modified version of Promise.all
-// Expects all promises to return a boolean
-// Returns a promise that resolves true if all promises returned true, false if any are false
-// Used in asyncValidation
-Promise.allBool = function (arr) {
-    var args = Array.prototype.slice.call(arr);
-
-    return new Promise(function (resolve, reject) {
-      if (args.length === 0) return resolve([]);
-      var remaining = args.length;
-
-      function res(i, val) {
-        try {
-          if (val && (typeof val === 'object' || typeof val === 'function')) {
-            var then = val.then;
-            if (typeof then === 'function') {
-              then.call(val, function (val) {
-                res(i, val);
-              }, reject);
-              return;
-            }
-          }
-          args[i] = val;
-          if (--remaining === 0) {
-            var containsFalse = args.indexOf(false);
-            if(containsFalse > -1){
-              resolve(false);
-            } else {
-              resolve(true);
-            }
-          }
-        } catch (ex) {
-          reject(ex);
-        }
-      }
-
-      for (var i = 0; i < args.length; i++) {
-        res(i, args[i]);
-      }
-    });
-  };

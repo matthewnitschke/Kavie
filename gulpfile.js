@@ -6,12 +6,12 @@ var rename = require('gulp-rename');
 var strip = require('gulp-strip-comments');
 
 gulp.task('scripts', function() {
-    gulp.src(['node_modules/promise-polyfill/promise.min.js', 'src/kavie.js'])
+    gulp.src(['src/kavie.js', 'node_modules/promise-polyfill/promise.min.js'])
         .pipe(uglify({ preserveComments: "license" }).on('error', gutil.log))
         .pipe(concat('kavie.min.js'))
         .pipe(gulp.dest('dist'));
 
-    gulp.src(['node_modules/promise-polyfill/promise.min.js', 'src/kavie.js'])
+    gulp.src(['src/kavie.js', 'node_modules/promise-polyfill/promise.min.js'])
         .pipe(concat('kavie.js'))
         .pipe(strip({ safe: true }))
         .pipe(gulp.dest('dist'));
