@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kavie</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="../node_modules/knockout/build/output/knockout-latest.js"></script>
+  <script src="../src/kavie.js"></script>
+
+</head>
+<body>
+  <div class="block">
+    Required:<br>
+    <input type="text" data-bind="textInput: value, css:{'validation-error': value.hasError}">
+  </div>
+
+  <input type="button" data-bind="click: submit" value="Validate">
+
+  <script>
+    Kavie.validatorFunctions.asyncTest = {
+      async: true,
+      validator: function(propVal, eleVal, callback) {
+        setTimeout(function(){
+          callback(true);
+        }, 100);
+      }
+    }
+
+    Kavie.validatorFunctions.asyncTestTwo = {
+      async: true,
+      validator: function(propVal, eleVal, callback) {
+        setTimeout(function(){
+          callback(false);
+        }, 1000);
+      }
+    }
+    function ViewModel(){
+      var self = this;
+
+      self.value = ko.observable().extend({
+        kavie: {
+          asyncTest: true,
+          asyncTestTwo: true
+        }
+      });
+
+      self.submit = function(){
+        Kavie.isValidAsync(self).then(function(isValid){
+          console.log(isValid);
+        });
+
+        console.log(Kavie.isValid(self));
+      }
+    }
+    ko.applyBindings(new ViewModel());
+  </script>
+</body>
+</html>

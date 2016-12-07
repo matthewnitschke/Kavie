@@ -9,14 +9,15 @@
   <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css">
   <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
 
+
   <script src="../node_modules/knockout/build/output/knockout-latest.js"></script>
-  <script src="../src/kavie.js"></script>
+  <script src="../dist/kavie.js"></script>
 
   <script>
 
   QUnit.test("Basic Functionality", function(assert) {
     Kavie.reset();
-    
+
     var basicViewModel = {
       value: ko.observable().extend({ kavie: { required: true, minLength: 2 } })
     }
@@ -118,6 +119,57 @@
 
   });
 
+  QUnit.test("Async Validation", function(assert){
+    Kavie.reset();
+
+    Kavie.validatorFunctions.asyncTest = {
+      async: true,
+      validator: function(propVal, eleVal, callback) {
+        setTimeout(function(){
+          callback(eleVal === "a");
+        }, 100);
+      }
+    }
+
+    Kavie.validatorFunctions.asyncTestTwo = {
+      async: true,
+      validator: function(propVal, eleVal, callback) {
+        setTimeout(function(){
+          callback(eleVal === "a");
+        }, 1000);
+      }
+    }
+
+
+    var vm = {
+      value: ko.observable().extend({
+        kavie: {
+          asyncTest: true
+        }
+      }),
+      valueTwo: ko.observable().extend({
+        kavie: {
+          asyncTestTwo: true
+        }
+      })
+    }
+
+    var done = assert.async();
+    Kavie.isValidAsync(vm).then(function(isValid){
+      assert.equal(isValid, false);
+      done();
+    });
+
+    vm.value("a");
+    vm.valueTwo("a");
+    var doneTwo = assert.async();
+    Kavie.isValidAsync(vm).then(function(isValid){
+      assert.equal(isValid, true);
+      doneTwo();
+    });
+
+
+  })
   </script>
 
 </head>

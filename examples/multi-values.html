@@ -11,14 +11,21 @@
 </head>
 <body>
   <div class="block">
-    Required:<br>
-    <input type="text" data-bind="textInput: value, css:{'validation-error': value.hasError}">
+    <div>
+      Required:<br>
+      <input type="text" data-bind="textInput: value, css:{'validation-error': value.hasError}">
+    </div>
 
-    Min(4):<br>
-    <input type="text" data-bind="textInput: valueTwo, css:{'validation-error': valueTwo.hasError}">
+    <div>
+      Min(4):<br>
+      <input type="text" data-bind="textInput: valueTwo, css:{'validation-error': valueTwo.hasError}">
+    </div>
 
-    Birthdate:<br>
-    <input type="text" data-bind="textInput: valueThree, css:{'validation-error': valueThree.hasError}">
+    <div>
+      Birthdate:<br>
+      <input type="text" data-bind="textInput: valueThree, css:{'validation-error': valueThree.hasError}">
+    </div>
+
   </div>
 
   <input type="button" data-bind="click: submit" value="Validate">
