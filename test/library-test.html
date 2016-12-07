@@ -151,6 +151,12 @@
         kavie: {
           asyncTestTwo: true
         }
+      }),
+      // since required is not async, it should be ignored
+      nonAsyncValue: ko.observable().extend({
+        kavie: {
+          required: true
+        }
       })
     }
 

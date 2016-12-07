@@ -11,8 +11,16 @@
 </head>
 <body>
   <div class="block">
-    Required:<br>
+    Async Test:<br>
     <input type="text" data-bind="textInput: value, css:{'validation-error': value.hasError}">
+  </div>
+  <div class="block">
+    Async Test Two:<br>
+    <input type="text" data-bind="textInput: valueTwo, css:{'validation-error': valueTwo.hasError}">
+  </div>
+
+  <div class="block">
+    <input type="checkbox" data-bind="checked: sectionToggle"> Section toggle
   </div>
 
   <input type="button" data-bind="click: submit" value="Validate">
@@ -22,35 +30,36 @@
       async: true,
       validator: function(propVal, eleVal, callback) {
         setTimeout(function(){
-          callback(true);
+          callback(false);
         }, 100);
       }
     }
 
-    Kavie.validatorFunctions.asyncTestTwo = {
-      async: true,
-      validator: function(propVal, eleVal, callback) {
-        setTimeout(function(){
-          callback(false);
-        }, 1000);
-      }
-    }
     function ViewModel(){
       var self = this;
 
       self.value = ko.observable().extend({
         kavie: {
           asyncTest: true,
-          asyncTestTwo: true
+          section: "basic"
         }
       });
 
+      self.valueTwo = ko.observable().extend({
+        kavie: {
+          asyncTest: true,
+          section: "basic"
+        }
+      });
+
+      self.sectionToggle = ko.observable(false);
+
+      Kavie.addVariableValidation("basic", self.sectionToggle);
+
       self.submit = function(){
-        Kavie.isValidAsync(self).then(function(isValid){
+        Kavie.isSectionValidAsync("basic").then(function(isValid){
           console.log(isValid);
         });
-
-        console.log(Kavie.isValid(self));
       }
     }
     ko.applyBindings(new ViewModel());

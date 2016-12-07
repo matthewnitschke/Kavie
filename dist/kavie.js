@@ -75,6 +75,35 @@
     return isValid;
   }
 
+  ns.isSectionValidAsync = function(sectionName){
+    var section = ns.sections[sectionName];
+
+    var promises = [];
+
+    if (ko.unwrap(section.validate)) {
+
+      var children = Object.keys(section.children);
+      for (var i = 0; i < children.length; i++) {
+        var childValid = ns.isSectionValid(children[i]); 
+
+        if (!childValid) { 
+          isValid = false;
+        }
+      }
+
+      var promise = ns.isValidAsync(section.observables);
+
+      if (promise){
+        promises.push(promise);
+      }
+
+    } else {
+      ns.deactivateSection(sectionName);
+    }
+
+    return promiseAllBool(promises);
+  }
+
   ns.deactivate = function(vm){
     var kavieObservables = compileObservables(vm);
 

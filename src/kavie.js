@@ -80,6 +80,36 @@
     return isValid;
   }
 
+  ns.isSectionValidAsync = function(sectionName){
+    var section = ns.sections[sectionName];
+
+    var promises = [];
+
+    if (ko.unwrap(section.validate)) {
+
+      var children = Object.keys(section.children);
+      for (var i = 0; i < children.length; i++) {
+        var childValid = ns.isSectionValid(children[i]); // recursivlly check children sections
+
+        if (!childValid) { // if a child is not valid, the entire section isn't
+          isValid = false;
+        }
+      }
+
+      var promise = ns.isValidAsync(section.observables);
+
+      if (promise){
+        promises.push(promise);
+      }
+
+    } else {
+      // if the section isn't validated, deactivate it
+      ns.deactivateSection(sectionName);
+    }
+
+    return promiseAllBool(promises);
+  }
+
   // turns off validation
   ns.deactivate = function(vm){
     var kavieObservables = compileObservables(vm);
