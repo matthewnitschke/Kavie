@@ -24,11 +24,12 @@
   },
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
     "gulp-rename": "^1.2.2",
     "gulp-strip-comments": "^2.4.3",
     "gulp-uglify": "^1.5.3",
+    "gulp-util": "^3.0.7",
     "knockout": "^3.4.0",
-    "qunitjs": "^2.0.1",
-    "gulp-util": "^3.0.7"
+    "qunitjs": "^2.0.1"
   }
 }
