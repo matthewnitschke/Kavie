@@ -25,6 +25,7 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
+    "gulp-inject-string": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-strip-comments": "^2.4.3",
     "gulp-uglify": "^1.5.3",
