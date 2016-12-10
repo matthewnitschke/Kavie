@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 1.1.1
+    Version: 1.1.2
 */
 
 ;(function(ns){
@@ -189,7 +189,7 @@
     maxLength: {
       validator: function (propVal, eleVal){
         if (eleVal){
-          return eleVal.length <= propVal;
+          return eleVal.length <= parseInt(propVal);
         }
         return true; 
       },
@@ -198,7 +198,7 @@
     minLength:{
       validator: function(propVal, eleVal){
           if (eleVal){
-            return eleVal.length >= propVal;
+            return eleVal.length >= parseInt(propVal);
           }
           return false; 
       },
@@ -372,7 +372,8 @@ ko.extenders.kavie = function (target, rules){
                     validatorFunction = Kavie.validatorFunctions[funcKey].validator;
                   }
 
-                  var isValid = validatorFunction(rules[key], newValue);
+                  var validatorProperty = ko.unwrap(rules[key]); 
+                  var isValid = validatorFunction(validatorProperty, newValue);
 
                   setValidationResult(isValid, key);
                 }
@@ -398,7 +399,8 @@ ko.extenders.kavie = function (target, rules){
                     }
 
                     var promise = new Promise(function(callback){
-                      validatorFunction(rules[key], newValue, callback);
+                      var validatorProperty = ko.unwrap(rules[key]); 
+                      validatorFunction(validatorProperty, newValue, callback);
                     }).then(function(isValid){
                       setValidationResult(isValid, key);
                       return isValid;
@@ -416,7 +418,9 @@ ko.extenders.kavie = function (target, rules){
     function setValidationResult(isValid, key){
       if (!isValid) {
         if (Kavie.validatorFunctions[funcKey].message){
-          target.errorMessage(Kavie.validatorFunctions[key].message.replace("{propVal}", target.rules[key]));
+          var message = Kavie.validatorFunctions[key].message;
+          var propertyValue = ko.unwrap(target.rules[key]); 
+          target.errorMessage(message.replace("{propVal}", propertyValue));
         } else {
           target.errorMessage("");
         }
