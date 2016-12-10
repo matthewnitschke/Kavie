@@ -72,7 +72,7 @@ self.value = ko.observable().extend({
 It is important to note that on the date, birthdate, phone, email, and numeric validators, if the users input is null, undefined, or empty they will return true. This is so you can still have optional values and use these validators. If you want them required, add the required validator.
 
 # More Features
-There is much much more to kavie, but in order to keep the readme simple the advanced features have been moved to the [wiki](https://github.com/matthewnitschke/Kavie/wiki)
+There is much more to kavie, but in order to keep the readme simple the advanced features have been moved to the [wiki](https://github.com/matthewnitschke/Kavie/wiki)
 
 ##Problems?
 Thanks of taking a look at kavie. If you have any problems let me know and I would love to help you out
