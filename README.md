@@ -1,7 +1,7 @@
 ![kavie-banner](https://cloud.githubusercontent.com/assets/6363089/13166491/cafa75c2-d685-11e5-8be8-3f878a9454f7.png)
 
 ## Why Kavie?
-Kavie is small, easy to use, and it works
+Kavie is small and easy to use. Simply that.
 
 ## Installation
 You can download kavie from npm
@@ -72,7 +72,7 @@ self.value = ko.observable().extend({
 It is important to note that on the date, birthdate, phone, email, and numeric validators, if the users input is null, undefined, or empty they will return true. This is so you can still have optional values and use these validators. If you want them required, add the required validator.
 
 # More Features
-Please see the [wiki](https://github.com/matthewnitschke/Kavie/wiki) for advanced features
+There is much more to kavie, but in order to keep the readme simple the advanced features have been moved to the [wiki](https://github.com/matthewnitschke/Kavie/wiki)
 
 ##Problems?
 Thanks of taking a look at kavie. If you have any problems let me know and I would love to help you out
