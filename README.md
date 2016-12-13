@@ -1,7 +1,7 @@
 ![kavie-banner](https://cloud.githubusercontent.com/assets/6363089/13166491/cafa75c2-d685-11e5-8be8-3f878a9454f7.png)
 
-## Why Kavie?
-Kavie is small and easy to use. Simply that.
+## Kavie?
+Kavie is a small and easy to use knockout js validation library.
 
 ## Installation
 You can download kavie from npm
