@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 1.1.2
+    Version: 1.1.3
 */
 
 ;(function(ns){
@@ -142,7 +142,7 @@
   }
 
   var isKavieObservable = function(observable){
-    return observable.hasOwnProperty("hasError"); 
+    return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); 
   }
 
   var compileObservables = function(vm){

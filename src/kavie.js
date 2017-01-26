@@ -150,7 +150,7 @@
 
   // simple helper method to see if an observable has been extended with the kavie extender
   var isKavieObservable = function(observable){
-    return observable.hasOwnProperty("hasError"); // when you extend an observable with kavie, it addes hasError.
+    return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); // when you extend an observable with kavie, it addes hasError.
   }
 
   // returns an array of all kavieObservables found in the viewModel potentially passed in,
