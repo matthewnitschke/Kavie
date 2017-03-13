@@ -383,7 +383,6 @@ function KavieSection(){
 // This is the knockout js extender
 // simply adds a few things to the observable so we can access these from the kavie object
 ko.extenders.kavie = function (target, rules){
-    // make a copy of rules because we delete from it, and that would delete the key from the object that is passed in
     var localRules = rules;
 
     target.hasError = ko.observable(); // tracks whether this observable is valid or not
