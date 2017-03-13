@@ -31,6 +31,31 @@
     assert.equal(Kavie.isValid(basicViewModel), true);
   });
 
+  QUnit.test("Validator Methods Order", function(assert){
+      Kavie.reset();
+      var basicViewModel = {
+        value: ko.observable().extend({
+          kavie: {
+            required: true,
+            birthdate: true
+          }
+        })
+      }
+
+      assert.equal(Kavie.isValid(basicViewModel), false)
+
+      basicViewModel = {
+        value: ko.observable().extend({
+          kavie: {
+            birthdate: true,
+            required: true,
+          }
+        })
+      }
+
+      assert.equal(Kavie.isValid(basicViewModel), false)
+  })
+
   QUnit.test("Sections Basics", function(assert){
     Kavie.reset();
 

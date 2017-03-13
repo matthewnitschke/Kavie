@@ -227,7 +227,7 @@
         // change date to accept no preceding 0 on month and day
         if (propVal && hasValue(eleVal)){
             date = eleVal;
-            
+
             // regex matches the patttern of dd/dd/dddd or dd/dd/dd (where d is a digit)
             var re = /(\d{2})\/(\d{2})\/((\d{4})|(\d{2}))/;
             if (date.search(re) == -1){
@@ -383,47 +383,46 @@ function KavieSection(){
 // This is the knockout js extender
 // simply adds a few things to the observable so we can access these from the kavie object
 ko.extenders.kavie = function (target, rules){
-    var localRules = rules;
-
     target.hasError = ko.observable(); // tracks whether this observable is valid or not
     target.errorMessage = ko.observable();
 
     // if section exsists add observable to it
-    if (localRules.section){
-      if (!Kavie.sections[localRules.section]){
-        Kavie.sections[localRules.section] = new KavieSection();
+    if (rules.section){
+      if (!Kavie.sections[rules.section]){
+        Kavie.sections[rules.section] = new KavieSection();
       }
 
-      Kavie.sections[localRules.section].observables.push(target);
-      localRules.section = "";
+      Kavie.sections[rules.section].observables.push(target);
+      rules.section = "";
     }
 
     // add the passed in rules to the observable
-    target.rules = localRules;
+    target.rules = rules;
 
     // Simply checks each rule attached to this observable and changes hasError variable
     function validate(newValue){
       var rules = target.rules;
 
-      for (key in rules){
-          for (funcKey in Kavie.validatorFunctions){
-              if (key == funcKey) {
-                if (!Kavie.validatorFunctions[key].async){
-                  var validatorFunction;
-                  if (typeof Kavie.validatorFunctions[funcKey] === "function"){
-                    validatorFunction = Kavie.validatorFunctions[funcKey];
-                  } else {
-                    validatorFunction = Kavie.validatorFunctions[funcKey].validator;
-                  }
+      var isObservableValid = true;
+      var erroredOutValidator = null; // the validator that was false
 
-                  var validatorProperty = ko.unwrap(rules[key]); // unwrap because it could be an observable (for dynamic properties)
-                  var isValid = validatorFunction(validatorProperty, newValue);
+      for(key in rules){
+        var validatorObject = Kavie.validatorFunctions[key];
 
-                  setValidationResult(isValid, key);
-                }
-              }
+        if (validatorObject && !validatorObject.async){ // make sure the validator exsists and isn't async
+
+          var property = ko.unwrap(rules[key]);
+          var isValid = validatorObject.validator(property, newValue);
+
+          if (isObservableValid && !isValid){
+            isObservableValid = false;
+            validatorObject.property = property; // record the property
+            erroredOutValidator = validatorObject;
           }
+        }
       }
+
+      setValidationResult(isObservableValid, erroredOutValidator);
     }
 
     // async version of validating
@@ -433,46 +432,40 @@ ko.extenders.kavie = function (target, rules){
         var promises = [];
 
         for (key in rules){
-            for (funcKey in Kavie.validatorFunctions){
-                if (key == funcKey) {
-                  if (Kavie.validatorFunctions[key].async){
-                    var validatorFunction;
-                    if (typeof Kavie.validatorFunctions[funcKey] === "function"){
-                      validatorFunction = Kavie.validatorFunctions[funcKey];
-                    } else {
-                      validatorFunction = Kavie.validatorFunctions[funcKey].validator;
-                    }
+          var validatorObject = Kavie.validatorFunctions[key];
 
-                    var promise = new Promise(function(callback){
-                      var validatorProperty = ko.unwrap(rules[key]); // unwrap because it could be an observable
-                      validatorFunction(validatorProperty, newValue, callback);
-                    }).then(function(isValid){
-                      setValidationResult(isValid, key);
-                      return isValid;
-                    });
+          if (validatorObject && validatorObject.async) {
 
-                    promises.push(promise);
-                  }
-                }
-            }
+            var promise = new Promise(function(callback){
+
+              var property = ko.unwrap(rules[key]); // unwrap because it could be an observable
+              validatorObject.validator(property, newValue, callback);
+
+            }).then(function(isValid){
+              setValidationResult(isValid, key);
+
+              return isValid;
+            });
+
+            promises.push(promise);
+
+          }
         }
 
         return promises;
     }
 
     // Sets the result of the validation, hasError value and errorMessage
-    function setValidationResult(isValid, key){
+    function setValidationResult(isValid, validatorObject){
       if (!isValid) {
-        if (Kavie.validatorFunctions[funcKey].message){
-          var message = Kavie.validatorFunctions[key].message;
-          var propertyValue = ko.unwrap(target.rules[key]); // targe.rules[key] can be an observable
+        if (validatorObject.message){
+          var message = validatorObject.message;
+          var propertyValue = validatorObject.property; // property populated when validator function returned false
           target.errorMessage(message.replace("{propVal}", propertyValue));
         } else {
           target.errorMessage("");
         }
-
         target.hasError(true);
-        return;
 
       } else {
         target.errorMessage("");
