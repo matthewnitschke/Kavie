@@ -47,7 +47,7 @@
       }
     }
 
-    return promiseAllBool(promises);
+    return ns.promiseAllBool(promises);
   }
 
   ns.isSectionValid = function(sectionName){
@@ -329,7 +329,7 @@
   // Expects all promises to return a boolean
   // Returns a promise that resolves true if all promises returned true, false if any are false
   // Used in asyncValidation
-  var promiseAllBool = function (arr) {
+  ns.promiseAllBool = function (arr) {
       var args = Array.prototype.slice.call(arr);
 
       return new Promise(function (resolve, reject) {
@@ -439,12 +439,14 @@ ko.extenders.kavie = function (target, rules){
             var promise = new Promise(function(callback){
 
               var property = ko.unwrap(rules[key]); // unwrap because it could be an observable
-              validatorObject.validator(property, newValue, callback);
+              validatorObject.property = property;
 
-            }).then(function(isValid){
-              setValidationResult(isValid, key);
-
-              return isValid;
+              validatorObject.validator(property, newValue, function(isValid){
+                return callback({
+                  isValid: isValid,
+                  validatorObject: validatorObject
+                })
+              });
             });
 
             promises.push(promise);
@@ -452,7 +454,17 @@ ko.extenders.kavie = function (target, rules){
           }
         }
 
-        return promises;
+        return Promise.all(promises).then(function(validatorResults){
+          for(var i = 0; i < validatorResults.length; i ++){
+            if (!validatorResults[i].isValid){
+              setValidationResult(validatorResults[i].isValid, validatorResults[i].validatorObject);
+              return false;
+            }
+          }
+
+          setValidationResult(true, validatorResults.validatorObject);
+          return true;
+        });
     }
 
     // Sets the result of the validation, hasError value and errorMessage
