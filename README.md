@@ -75,5 +75,5 @@ It is important to note that on the date, birthdate, phone, email, and numeric v
 # More Features
 There is much more to kavie, but in order to keep the readme simple the advanced features have been moved to the [wiki](https://github.com/matthewnitschke/Kavie/wiki)
 
-##Problems?
+## Problems?
 Thanks of taking a look at kavie. If you have any problems let me know and I would love to help you out
