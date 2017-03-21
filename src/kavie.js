@@ -47,7 +47,10 @@
       }
     }
 
-    return ns.promiseAllBool(promises);
+    return Promise.all(promises).then(function(results){
+      // if every element in results is true return true, if any false, return false
+      return results.every(isTrue);
+    });
   }
 
   ns.isSectionValid = function(sectionName){
@@ -83,31 +86,24 @@
   ns.isSectionValidAsync = function(sectionName){
     var section = ns.sections[sectionName];
 
-    var promises = [];
-
     if (ko.unwrap(section.validate)) {
 
+      var childrenPromises = [];
       var children = Object.keys(section.children);
       for (var i = 0; i < children.length; i++) {
-        var childValid = ns.isSectionValid(children[i]); // recursivlly check children sections
+        childrenPromises.push(ns.isSectionValidAsync(children[i])); // recursivlly check children sections
+      }
 
-        if (!childValid) { // if a child is not valid, the entire section isn't
-          isValid = false;
+      Promise.all(childrenPromises).then(function(results){
+        if (results.every(isTrue)){
+          return ns.isValidAsync(section.observables);
         }
-      }
-
-      var promise = ns.isValidAsync(section.observables);
-
-      if (promise){
-        promises.push(promise);
-      }
+      });
 
     } else {
       // if the section isn't validated, deactivate it
       ns.deactivateSection(sectionName);
     }
-
-    return promiseAllBool(promises);
   }
 
   // turns off validation
@@ -140,12 +136,19 @@
   }
 
   ns.addSectionChild = function(parentSectionName, childSectionName){
+    // ensure parentSection exsists
     var parentSection = ns.sections[parentSectionName];
     if (!parentSection) {
       parentSection = ns.sections[parentSectionName] = new KavieSection();
     }
 
-    parentSection.children[childSectionName] = new KavieSection();
+    // ensure childSection exsists
+    var childSection = ns.sections[childSectionName];
+    if (!childSection){
+      childSection = ns.sections[childSectionName] = new KavieSection();
+    }
+
+    parentSection.children[childSectionName] = childSection;
   }
 
   // simple helper method to see if an observable has been extended with the kavie extender
@@ -325,47 +328,11 @@
      return !(value == null || value.length === 0);
   }
 
-  // Minor modified version of Promise.all
-  // Expects all promises to return a boolean
-  // Returns a promise that resolves true if all promises returned true, false if any are false
-  // Used in asyncValidation
-  ns.promiseAllBool = function (arr) {
-      var args = Array.prototype.slice.call(arr);
-
-      return new Promise(function (resolve, reject) {
-        if (args.length === 0) return resolve([]);
-        var remaining = args.length;
-
-        function res(i, val) {
-          try {
-            if (val && (typeof val === 'object' || typeof val === 'function')) {
-              var then = val.then;
-              if (typeof then === 'function') {
-                then.call(val, function (val) {
-                  res(i, val);
-                }, reject);
-                return;
-              }
-            }
-            args[i] = val;
-            if (--remaining === 0) {
-              var containsFalse = args.indexOf(false);
-              if(containsFalse > -1){
-                resolve(false);
-              } else {
-                resolve(true);
-              }
-            }
-          } catch (ex) {
-            reject(ex);
-          }
-        }
-
-        for (var i = 0; i < args.length; i++) {
-          res(i, args[i]);
-        }
-      });
-    };
+  // incredebly simple helper function
+  // to be used in array.every() processes
+  var isTrue = function(value){
+    return value;
+  }
 
 }(this.Kavie = this.Kavie || {}));
 
@@ -441,7 +408,7 @@ ko.extenders.kavie = function (target, rules){
               var property = ko.unwrap(rules[key]); // unwrap because it could be an observable
               validatorObject.property = property;
 
-              validatorObject.validator(property, newValue, function(isValid){
+              validatorObject.validator(property, newValue, function(isValid, e, r){
                 return callback({
                   isValid: isValid,
                   validatorObject: validatorObject

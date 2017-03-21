@@ -15,6 +15,15 @@
 
   <script>
 
+  Kavie.validatorFunctions.asyncBool = {
+    async: true,
+    validator: function(propVal, eleVal, callback) {
+      setTimeout(function(){
+        callback(propVal);
+      }, 100);
+    }
+  }
+
   QUnit.test("Basic Functionality", function(assert) {
     Kavie.reset();
 
@@ -146,18 +155,7 @@
 
   QUnit.test("Async Validation", function(assert){
     Kavie.reset();
-
-
     // simple true/false single async testing
-
-    Kavie.validatorFunctions.asyncBool = {
-      async: true,
-      validator: function(propVal, eleVal, callback) {
-        setTimeout(function(){
-          callback(propVal);
-        }, 100);
-      }
-    }
 
     var vm = {
       value: ko.observable().extend({ kavie: { asyncBool: true } })
@@ -211,6 +209,39 @@
       done5();
     });
 
+  })
+
+  QUnit.test("Async Sections", function(assert){
+    Kavie.reset();
+
+    var vm = {
+      valSecA: ko.observable().extend({ kavie: { asyncBool: true, section: "a" } }),
+      valSecB: ko.observable().extend({ kavie: { asyncBool: false, section: "b"} })
+    }
+
+    var done = assert.async();
+    Kavie.isSectionValidAsync("a").then(function(isValid){
+      assert.equal(isValid, true);
+      done();
+    })
+
+  })
+
+  QUnit.test("Async Children", function(assert){
+    Kavie.reset();
+
+    var vm = {
+      valSecA: ko.observable().extend({ kavie: { asyncBool: true, section: "parent" } }),
+      valSecB: ko.observable().extend({ kavie: { asyncBool: false, section: "child"} })
+    }
+
+    Kavie.addSectionChild("parent", "child");
+
+    var done = assert.async();
+    Kavie.isSectionValidAsync("parent").then(function(isValid){
+      assert.equal(isValid, false);
+      done();
+    })
   })
   </script>
 

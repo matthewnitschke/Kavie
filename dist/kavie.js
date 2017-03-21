@@ -43,7 +43,9 @@
       }
     }
 
-    return ns.promiseAllBool(promises);
+    return Promise.all(promises).then(function(results){
+      return results.every(isTrue);
+    });
   }
 
   ns.isSectionValid = function(sectionName){
@@ -78,30 +80,23 @@
   ns.isSectionValidAsync = function(sectionName){
     var section = ns.sections[sectionName];
 
-    var promises = [];
-
     if (ko.unwrap(section.validate)) {
 
+      var childrenPromises = [];
       var children = Object.keys(section.children);
       for (var i = 0; i < children.length; i++) {
-        var childValid = ns.isSectionValid(children[i]); 
+        childrenPromises.push(ns.isSectionValidAsync(children[i])); 
+      }
 
-        if (!childValid) { 
-          isValid = false;
+      Promise.all(childrenPromises).then(function(results){
+        if (results.every(isTrue)){
+          return ns.isValidAsync(section.observables);
         }
-      }
-
-      var promise = ns.isValidAsync(section.observables);
-
-      if (promise){
-        promises.push(promise);
-      }
+      });
 
     } else {
       ns.deactivateSection(sectionName);
     }
-
-    return promiseAllBool(promises);
   }
 
   ns.deactivate = function(vm){
@@ -138,7 +133,12 @@
       parentSection = ns.sections[parentSectionName] = new KavieSection();
     }
 
-    parentSection.children[childSectionName] = new KavieSection();
+    var childSection = ns.sections[childSectionName];
+    if (!childSection){
+      childSection = ns.sections[childSectionName] = new KavieSection();
+    }
+
+    parentSection.children[childSectionName] = childSection;
   }
 
   var isKavieObservable = function(observable){
@@ -306,43 +306,9 @@
      return !(value == null || value.length === 0);
   }
 
-  ns.promiseAllBool = function (arr) {
-      var args = Array.prototype.slice.call(arr);
-
-      return new Promise(function (resolve, reject) {
-        if (args.length === 0) return resolve([]);
-        var remaining = args.length;
-
-        function res(i, val) {
-          try {
-            if (val && (typeof val === 'object' || typeof val === 'function')) {
-              var then = val.then;
-              if (typeof then === 'function') {
-                then.call(val, function (val) {
-                  res(i, val);
-                }, reject);
-                return;
-              }
-            }
-            args[i] = val;
-            if (--remaining === 0) {
-              var containsFalse = args.indexOf(false);
-              if(containsFalse > -1){
-                resolve(false);
-              } else {
-                resolve(true);
-              }
-            }
-          } catch (ex) {
-            reject(ex);
-          }
-        }
-
-        for (var i = 0; i < args.length; i++) {
-          res(i, args[i]);
-        }
-      });
-    };
+  var isTrue = function(value){
+    return value;
+  }
 
 }(this.Kavie = this.Kavie || {}));
 
@@ -412,7 +378,7 @@ ko.extenders.kavie = function (target, rules){
               var property = ko.unwrap(rules[key]); 
               validatorObject.property = property;
 
-              validatorObject.validator(property, newValue, function(isValid){
+              validatorObject.validator(property, newValue, function(isValid, e, r){
                 return callback({
                   isValid: isValid,
                   validatorObject: validatorObject
