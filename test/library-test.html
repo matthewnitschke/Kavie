@@ -147,58 +147,69 @@
   QUnit.test("Async Validation", function(assert){
     Kavie.reset();
 
-    Kavie.validatorFunctions.asyncTest = {
+
+    // simple true/false single async testing
+
+    Kavie.validatorFunctions.asyncBool = {
       async: true,
       validator: function(propVal, eleVal, callback) {
         setTimeout(function(){
-          callback(eleVal === "a");
+          callback(propVal);
         }, 100);
       }
     }
 
-    Kavie.validatorFunctions.asyncTestTwo = {
-      async: true,
-      validator: function(propVal, eleVal, callback) {
-        setTimeout(function(){
-          callback(eleVal === "a");
-        }, 1000);
-      }
-    }
-
-
     var vm = {
-      value: ko.observable().extend({
-        kavie: {
-          asyncTest: true
-        }
-      }),
-      valueTwo: ko.observable().extend({
-        kavie: {
-          asyncTestTwo: true
-        }
-      }),
-      // since required is not async, it should be ignored
-      nonAsyncValue: ko.observable().extend({
-        kavie: {
-          required: true
-        }
-      })
+      value: ko.observable().extend({ kavie: { asyncBool: true } })
     }
 
     var done = assert.async();
     Kavie.isValidAsync(vm).then(function(isValid){
-      assert.equal(isValid, false);
+      assert.equal(isValid, true);
       done();
     });
 
-    vm.value("a");
-    vm.valueTwo("a");
-    var doneTwo = assert.async();
+    vm.value = ko.observable().extend({ kavie:{ asyncBool: false } })
+
+    var done2 = assert.async();
     Kavie.isValidAsync(vm).then(function(isValid){
-      assert.equal(isValid, true);
-      doneTwo();
+      assert.equal(isValid, false);
+      done2();
     });
 
+    // Multi Variable propVal and eleVal testing
+    Kavie.validatorFunctions.asyncVals = {
+      async: true,
+      validator: function(propVal, eleVal, callback) {
+        setTimeout(function(){
+          callback(propVal === eleVal);
+        }, 1000);
+      }
+    }
+
+    vm.value = ko.observable().extend({ kavie: { asyncVals: '1' } })
+    vm.valueTwo = ko.observable().extend({ kavie: { asyncVals: '2' } })
+
+    var done3 = assert.async();
+    Kavie.isValidAsync(vm).then(function(isValid){
+      assert.equal(isValid, false);
+      done3();
+    });
+
+    vm.value('1');
+    var done4 = assert.async();
+    Kavie.isValidAsync(vm).then(function(isValid){
+      assert.equal(isValid, false);
+      done4();
+    });
+
+    vm.value('1');
+    vm.valueTwo('2');
+    var done5 = assert.async();
+    Kavie.isValidAsync(vm).then(function(isValid){
+      assert.equal(isValid, true);
+      done5();
+    });
 
   })
   </script>
