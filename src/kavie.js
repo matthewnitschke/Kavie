@@ -16,11 +16,18 @@
   }
 
   // turn validaton on
-  ns.isValid = function(vm){
+  ns.isValid = function(properties){
+    // propeties can be:
+    // self: an object with kavie observables
+    // [self, a, foo]: an array of objects with kavie observables
+    // "sectionA": a string of the name of a kavie section
+    // ["sectionA", "sectionB"]: an array of section names
+    // ["sectionA", self, foo, "sectionB"]: an array of a mix of the previous
+
     // vm can be a viewModel or a Kavie.section
     var isValid = true;
 
-    var kavieObservables = compileObservables(vm);
+    var kavieObservables = compileObservables(properties);
 
     for(var i = 0; i < kavieObservables.length; i ++){
       kavieObservables[i].startValidation();
@@ -155,19 +162,44 @@
 
   // returns an array of all kavieObservables found in the viewModel potentially passed in,
   // and attached to the Kavie object it's self
-  var compileObservables = function(vm){
+  var compileObservables = function(data){
+
+    if (!data) {
+      throw "Data must not be null";
+    }
 
     var kavieObservables = [];
 
-    if (vm && vm.hasOwnProperty("observables")){
-      vm = vm.observables;
-    }
+    if (Array.isArray(data)){
+      // if data is an array, recursivlly compile each array item
+      for(var i = 0; i < data.length; i ++){
+        kavieObservables = kavieObservables.concat(compileObservables(data[i]));
+      }
 
-    if (vm){
-      var keys = Object.keys(vm);
-      for(var i = 0; i < keys.length; i ++){
-        if (isKavieObservable(vm[keys[i]])){
-          kavieObservables.push(vm[keys[i]]);
+    } else if (typeof data === "string"){
+      // if data is a string, data is a sectionName
+      var section = ns.sections[data];
+      if (!section){
+        throw "No section found with this name: " + data;
+      }
+
+      if (ko.unwrap(section.validate)){
+        var childrenKeys = Object.keys(section.children);
+
+        for(var i = 0; i < childrenKeys.length; i ++){
+          kavieObservables = kavieObservables.concat(compileObservables(section.children[childrenKeys[i]]));
+        }
+
+        kavieObservables = kavieObservables.concat(section.observables);
+
+      }
+
+    } else {
+      // data is an object
+      var keys = Object.keys(data);
+      for(var i = 0; i < keys.length; i ++) {
+        if (isKavieObservable(data[keys[i]])) {
+          kavieObservables.push(data[keys[i]]);
         }
       }
     }
