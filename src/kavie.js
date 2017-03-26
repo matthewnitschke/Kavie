@@ -307,6 +307,14 @@
     return value;
   }
 
+  // exists for legacy reasons. [3/26/2017]
+  ns.isSectionValid(sectionName){
+    return ns.isValid(sectionName);
+  }
+  ns.isSectionValidAsync(sectionName){
+    return ns.isValidAsync(sectionName);
+  }
+
 }(this.Kavie = this.Kavie || {}));
 
 function KavieSection(){
