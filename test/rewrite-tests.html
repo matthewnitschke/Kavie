@@ -26,16 +26,16 @@
           required: true
         }
       }),
-      v2: ko.observable("").extend({
+      v2: ko.observable("3dddd").extend({
         kavie: {
           section: "b",
-          required: true
+          required: true,
+          minLength: 5
         }
       })
     }
 
     Kavie.addSectionChild("a", "b");
-    Kavie.addVariableValidation("b", false);
 
     console.log(Kavie.isValid("a"));
 

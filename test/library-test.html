@@ -79,12 +79,12 @@
       }),
     }
 
-    assert.equal(Kavie.isSectionValid("section"), false);
+    assert.equal(Kavie.isValid("section"), false);
 
     vm.sectionValue("er");
     vm.sectionValueTwo("er");
 
-    assert.equal(Kavie.isSectionValid("section"), true);
+    assert.equal(Kavie.isValid("section"), true);
 
     assert.equal(Kavie.isValid(vm), false);
 
@@ -109,11 +109,11 @@
 
     Kavie.addVariableValidation("section", vm.validate);
 
-    assert.equal(Kavie.isSectionValid("section"), true);
+    assert.equal(Kavie.isValid("section"), true);
 
     vm.validate(true);
 
-    assert.equal(Kavie.isSectionValid("section"), false);
+    assert.equal(Kavie.isValid("section"), false);
   });
 
   QUnit.test("Children Sections", function(assert){
@@ -136,11 +136,11 @@
 
     Kavie.addSectionChild("parent", "child");
 
-    assert.equal(Kavie.isSectionValid("parent"), false);
+    assert.equal(Kavie.isValid("parent"), false);
     vm.value("asdf");
-    assert.equal(Kavie.isSectionValid("parent"), false);
+    assert.equal(Kavie.isValid("parent"), false);
     vm.valueTwo("asdf");
-    assert.equal(Kavie.isSectionValid("parent"), true);
+    assert.equal(Kavie.isValid("parent"), true);
 
   });
 
