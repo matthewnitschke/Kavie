@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Kavie Library Tests</title>
+
+  <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css">
+  <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+
+
+  <script src="../node_modules/knockout/build/output/knockout-latest.js"></script>
+  <script src="../dist/kavie.js"></script>
+
+  <script>
+
+  QUnit.test("Basic", function(assert) {
+    Kavie.reset();
+
+    var vm = {
+      v: ko.observable("e").extend({
+        kavie: {
+          section: "a",
+          required: true
+        }
+      }),
+      v2: ko.observable("3dddd").extend({
+        kavie: {
+          section: "b",
+          required: true,
+          minLength: 5
+        }
+      })
+    }
+
+    Kavie.addSectionChild("a", "b");
+
+    console.log(Kavie.isValid("a"));
+
+  });
+
+  </script>
+
+</head>
+<body>
+    <div id="qunit"></div>
+</body>
+</html>

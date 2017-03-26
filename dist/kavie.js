@@ -13,10 +13,11 @@
     ns.sections = {};
   }
 
-  ns.isValid = function(vm){
+  ns.isValid = function(properties){
+
     var isValid = true;
 
-    var kavieObservables = compileObservables(vm);
+    var kavieObservables = compileObservables(properties);
 
     for(var i = 0; i < kavieObservables.length; i ++){
       kavieObservables[i].startValidation();
@@ -46,35 +47,6 @@
     return Promise.all(promises).then(function(results){
       return results.every(isTrue);
     });
-  }
-
-  ns.isSectionValid = function(sectionName){
-    var section = ns.sections[sectionName];
-
-    var isValid = true;
-
-    if (ko.unwrap(section.validate)) {
-
-      var children = Object.keys(section.children);
-      for (var i = 0; i < children.length; i++) {
-        var childValid = ns.isSectionValid(children[i]); 
-
-        if (!childValid) { 
-          isValid = false;
-        }
-      }
-
-      var sectionObsValid = ns.isValid(section.observables);
-
-      if (!sectionObsValid){
-        isValid = false;
-      }
-
-    } else {
-      ns.deactivateSection(sectionName);
-    }
-
-    return isValid;
   }
 
   ns.isSectionValidAsync = function(sectionName){
@@ -130,12 +102,16 @@
   ns.addSectionChild = function(parentSectionName, childSectionName){
     var parentSection = ns.sections[parentSectionName];
     if (!parentSection) {
-      parentSection = ns.sections[parentSectionName] = new KavieSection();
+      throw "No parent section found with name: " + parentSectionName;
     }
 
     var childSection = ns.sections[childSectionName];
     if (!childSection){
+<<<<<<< HEAD
       childSection = ns.sections[childSectionName] = new KavieSection();
+=======
+      throw "No child section found with name: " + childSectionName;
+>>>>>>> API-Simplification
     }
 
     parentSection.children[childSectionName] = childSection;
@@ -145,19 +121,41 @@
     return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); 
   }
 
-  var compileObservables = function(vm){
+  var compileObservables = function(data){
+
+    if (!data) {
+      throw "Data must not be null";
+    }
 
     var kavieObservables = [];
 
-    if (vm && vm.hasOwnProperty("observables")){
-      vm = vm.observables;
-    }
+    if (Array.isArray(data)){
+      for(var i = 0; i < data.length; i ++){
+        kavieObservables = kavieObservables.concat(compileObservables(data[i]));
+      }
 
-    if (vm){
-      var keys = Object.keys(vm);
-      for(var i = 0; i < keys.length; i ++){
-        if (isKavieObservable(vm[keys[i]])){
-          kavieObservables.push(vm[keys[i]]);
+    } else if (typeof data === "string"){
+      var section = ns.sections[data];
+      if (!section){
+        throw "No section found with this name: " + data;
+      }
+
+      if (ko.unwrap(section.validate)){
+        var childrenKeys = Object.keys(section.children);
+
+        for(var i = 0; i < childrenKeys.length; i ++){
+          kavieObservables = kavieObservables.concat(compileObservables(childrenKeys[i]));
+        }
+
+        kavieObservables = kavieObservables.concat(section.observables);
+
+      }
+
+    } else {
+      var keys = Object.keys(data);
+      for(var i = 0; i < keys.length; i ++) {
+        if (isKavieObservable(data[keys[i]])) {
+          kavieObservables.push(data[keys[i]]);
         }
       }
     }
