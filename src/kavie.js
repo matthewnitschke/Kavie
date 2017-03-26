@@ -60,29 +60,6 @@
     });
   }
 
-  ns.isSectionValidAsync = function(sectionName){
-    var section = ns.sections[sectionName];
-
-    if (ko.unwrap(section.validate)) {
-
-      var childrenPromises = [];
-      var children = Object.keys(section.children);
-      for (var i = 0; i < children.length; i++) {
-        childrenPromises.push(ns.isSectionValidAsync(children[i])); // recursivlly check children sections
-      }
-
-      Promise.all(childrenPromises).then(function(results){
-        if (results.every(isTrue)){
-          return ns.isValidAsync(section.observables);
-        }
-      });
-
-    } else {
-      // if the section isn't validated, deactivate it
-      ns.deactivateSection(sectionName);
-    }
-  }
-
   // turns off validation
   ns.deactivate = function(vm){
     var kavieObservables = compileObservables(vm);
@@ -115,15 +92,6 @@
     var parentSection = ns.sections[parentSectionName];
     var childSection = ns.sections[childSectionName];
     parentSection.children[childSectionName] = childSection;
-  }
-
-  var sectionExsists = function(sectionName){
-    return !(ns.sections[sectionName] === undefined || ns.sections[sectionName] === null);
-  }
-
-  // simple helper method to see if an observable has been extended with the kavie extender
-  var isKavieObservable = function(observable){
-    return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); // when you extend an observable with kavie, it addes hasError.
   }
 
   // returns an array of all kavieObservables found in the data passed in
@@ -171,6 +139,17 @@
 
     return kavieObservables;
   }
+
+  // simple helper method to see if an observable has been extended with the kavie extender
+  var isKavieObservable = function(observable){
+    return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); // when you extend an observable with kavie, it addes hasError.
+  }
+
+  var sectionExsists = function(sectionName){
+    return !(ns.sections[sectionName] === undefined || ns.sections[sectionName] === null);
+  }
+
+
 
   // built in validator functions
   // general rule for these is if empty, return true (if you want it required, you can add the required function)
