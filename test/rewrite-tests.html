@@ -20,13 +20,13 @@
     Kavie.reset();
 
     var vm = {
-      v: ko.observable().extend({
+      v: ko.observable("e").extend({
         kavie: {
           section: "a",
           required: true
         }
       }),
-      v2: ko.observable().extend({
+      v2: ko.observable("").extend({
         kavie: {
           section: "b",
           required: true
@@ -34,7 +34,10 @@
       })
     }
 
-    Kavie.isValid(["a"]);
+    Kavie.addSectionChild("a", "b");
+    Kavie.addVariableValidation("b", false);
+
+    console.log(Kavie.isValid("a"));
 
   });
 

@@ -57,36 +57,6 @@
     return ns.promiseAllBool(promises);
   }
 
-  ns.isSectionValid = function(sectionName){
-    var section = ns.sections[sectionName];
-
-    var isValid = true;
-
-    if (ko.unwrap(section.validate)) {
-
-      var children = Object.keys(section.children);
-      for (var i = 0; i < children.length; i++) {
-        var childValid = ns.isSectionValid(children[i]); // recursivlly check children sections
-
-        if (!childValid) { // if a child is not valid, the entire section isn't
-          isValid = false;
-        }
-      }
-
-      var sectionObsValid = ns.isValid(section.observables);
-
-      if (!sectionObsValid){
-        isValid = false;
-      }
-
-    } else {
-      // if the section isn't validated, deactivate it
-      ns.deactivateSection(sectionName);
-    }
-
-    return isValid;
-  }
-
   ns.isSectionValidAsync = function(sectionName){
     var section = ns.sections[sectionName];
 
@@ -126,21 +96,10 @@
     }
   }
 
-  ns.deactivateSection = function(sectionName){
-    var section = ns.sections[sectionName];
-
-    var children = Object.keys(section.children);
-    for(var i = 0; i < children.length; i ++){
-      ns.deactivateSection(children[i]); // recursivlly go through all the section's children
-    }
-
-    ns.deactivate(section.observables);
-  }
-
   ns.addVariableValidation = function(sectionName, shouldValidate){
     var section = ns.sections[sectionName];
     if (!section){
-      section = ns.sections[sectionName] = new KavieSection();
+      throw "No section found with name: " + sectionName;
     }
 
     section.validate = shouldValidate;
@@ -149,10 +108,15 @@
   ns.addSectionChild = function(parentSectionName, childSectionName){
     var parentSection = ns.sections[parentSectionName];
     if (!parentSection) {
-      parentSection = ns.sections[parentSectionName] = new KavieSection();
+      throw "No parent section found with name: " + parentSectionName;
     }
 
-    parentSection.children[childSectionName] = new KavieSection();
+    var childSection = ns.sections[childSectionName];
+    if (!childSection){
+      throw "No child section found with name: " + childSectionName;
+    }
+
+    parentSection.children[childSectionName] = childSection;
   }
 
   // simple helper method to see if an observable has been extended with the kavie extender
@@ -187,7 +151,7 @@
         var childrenKeys = Object.keys(section.children);
 
         for(var i = 0; i < childrenKeys.length; i ++){
-          kavieObservables = kavieObservables.concat(compileObservables(section.children[childrenKeys[i]]));
+          kavieObservables = kavieObservables.concat(compileObservables(childrenKeys[i]));
         }
 
         kavieObservables = kavieObservables.concat(section.observables);
