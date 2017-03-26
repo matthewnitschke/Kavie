@@ -79,21 +79,10 @@
     }
   }
 
-  ns.deactivateSection = function(sectionName){
-    var section = ns.sections[sectionName];
-
-    var children = Object.keys(section.children);
-    for(var i = 0; i < children.length; i ++){
-      ns.deactivateSection(children[i]); 
-    }
-
-    ns.deactivate(section.observables);
-  }
-
   ns.addVariableValidation = function(sectionName, shouldValidate){
     var section = ns.sections[sectionName];
     if (!section){
-      section = ns.sections[sectionName] = new KavieSection();
+      throw "No section found with name: " + sectionName;
     }
 
     section.validate = shouldValidate;
@@ -107,11 +96,7 @@
 
     var childSection = ns.sections[childSectionName];
     if (!childSection){
-<<<<<<< HEAD
-      childSection = ns.sections[childSectionName] = new KavieSection();
-=======
       throw "No child section found with name: " + childSectionName;
->>>>>>> API-Simplification
     }
 
     parentSection.children[childSectionName] = childSection;
