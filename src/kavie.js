@@ -93,27 +93,32 @@
   }
 
   ns.addVariableValidation = function(sectionName, shouldValidate){
-    var section = ns.sections[sectionName];
-    if (!section){
+    if (!sectionExsists(sectionName)){
       throw "No section found with name: " + sectionName;
     }
 
+    var section = ns.sections[sectionName];
     section.validate = shouldValidate;
   }
 
   ns.addSectionChild = function(parentSectionName, childSectionName){
     // ensure parentSection exsists
-    var parentSection = ns.sections[parentSectionName];
-    if (!parentSection) {
+    if (!sectionExsists(parentSection)) {
       throw "No parent section found with name: " + parentSectionName;
     }
 
-    var childSection = ns.sections[childSectionName];
-    if (!childSection){
+    // ensure childSection exsists
+    if (!sectionExsists(childSection)){
       throw "No child section found with name: " + childSectionName;
     }
 
+    var parentSection = ns.sections[parentSectionName];
+    var childSection = ns.sections[childSectionName];
     parentSection.children[childSectionName] = childSection;
+  }
+
+  var sectionExsists = function(sectionName){
+    return !(ns.sections[sectionName] === undefined || ns.sections[sectionName] === null);
   }
 
   // simple helper method to see if an observable has been extended with the kavie extender
@@ -121,8 +126,7 @@
     return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); // when you extend an observable with kavie, it addes hasError.
   }
 
-  // returns an array of all kavieObservables found in the viewModel potentially passed in,
-  // and attached to the Kavie object it's self
+  // returns an array of all kavieObservables found in the data passed in
   var compileObservables = function(data){
 
     if (!data) {
