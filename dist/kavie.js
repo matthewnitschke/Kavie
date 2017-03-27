@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 2.0.0
+    Version: 2.1.0
 */
 
 ;(function(ns){
@@ -43,8 +43,10 @@
       }
     }
 
+    var synchronousMethodsValid = ns.isValid(vm);
+
     return Promise.all(promises).then(function(results){
-      return results.every(isTrue);
+      return results.every(isTrue) && synchronousMethodsValid;
     });
   }
 

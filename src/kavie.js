@@ -51,9 +51,11 @@
       }
     }
 
+    var synchronousMethodsValid = ns.isValid(vm);
+
     return Promise.all(promises).then(function(results){
       // if every element in results is true return true, if any false, return false
-      return results.every(isTrue);
+      return results.every(isTrue) && synchronousMethodsValid;
     });
   }
 
