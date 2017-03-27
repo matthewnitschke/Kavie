@@ -7,8 +7,6 @@
 
 // This is a singleton pattern for the Kavie object to validate against
 ;(function(ns){
-
-  // holds out observables and sections
   ns.sections = {};
 
   ns.reset = function(){
@@ -24,7 +22,6 @@
     // ["sectionA", "sectionB"]: an array of section names
     // ["sectionA", self, foo, "sectionB"]: an array of a mix of the previous
 
-    // vm can be a viewModel or a Kavie.section
     var isValid = true;
 
     var kavieObservables = compileObservables(properties);
@@ -80,12 +77,12 @@
 
   ns.addSectionChild = function(parentSectionName, childSectionName){
     // ensure parentSection exsists
-    if (!sectionExsists(parentSection)) {
+    if (!sectionExsists(parentSectionName)) {
       throw "No parent section found with name: " + parentSectionName;
     }
 
     // ensure childSection exsists
-    if (!sectionExsists(childSection)){
+    if (!sectionExsists(childSectionName)){
       throw "No child section found with name: " + childSectionName;
     }
 
@@ -94,9 +91,8 @@
     parentSection.children[childSectionName] = childSection;
   }
 
-  // returns an array of all kavieObservables found in the data passed in
-  var compileObservables = function(data){
-
+  var compileObservables = function(data) {
+    // returns an array of all kavieObservables found in the data passed in
     if (!data) {
       throw "Data must not be null";
     }
@@ -140,16 +136,24 @@
     return kavieObservables;
   }
 
-  // simple helper method to see if an observable has been extended with the kavie extender
-  var isKavieObservable = function(observable){
+  var isKavieObservable = function(observable) {
+    // simple helper method to see if an observable has been extended with the kavie extender
     return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); // when you extend an observable with kavie, it addes hasError.
   }
 
-  var sectionExsists = function(sectionName){
+  var sectionExsists = function(sectionName) {
     return !(ns.sections[sectionName] === undefined || ns.sections[sectionName] === null);
   }
 
+  var hasValue = function(value) {
+     return !(value == null || value.length === 0);
+  }
 
+  var isTrue = function(value) {
+    // incredebly simple helper function
+    // to be used in array.every() processes
+    return value;
+  }
 
   // built in validator functions
   // general rule for these is if empty, return true (if you want it required, you can add the required function)
@@ -297,21 +301,11 @@
     }
   }
 
-  var hasValue = function(value){
-     return !(value == null || value.length === 0);
-  }
-
-  // incredebly simple helper function
-  // to be used in array.every() processes
-  var isTrue = function(value){
-    return value;
-  }
-
   // exists for legacy reasons. [3/26/2017]
-  ns.isSectionValid(sectionName){
+  ns.isSectionValid = function(sectionName) {
     return ns.isValid(sectionName);
   }
-  ns.isSectionValidAsync(sectionName){
+  ns.isSectionValidAsync = function(sectionName) {
     return ns.isValidAsync(sectionName);
   }
 
@@ -389,12 +383,15 @@ ko.extenders.kavie = function (target, rules){
               var property = ko.unwrap(rules[key]); // unwrap because it could be an observable
               validatorObject.property = property;
 
-              validatorObject.validator(property, newValue, function(isValid, e, r){
+              var valObj = validatorObject; // create a version of validator object locally so it can be accessed in the validator callback
+
+              validatorObject.validator(property, newValue, function(isValid){
                 return callback({
                   isValid: isValid,
-                  validatorObject: validatorObject
+                  validatorObject: valObj
                 })
               });
+
             });
 
             promises.push(promise);
@@ -432,8 +429,6 @@ ko.extenders.kavie = function (target, rules){
         target.hasError(false);
       }
     }
-
-
 
     target.startValidation = function(){
         target.subscription = target.subscribe(validate); // creates a subscribable to update when value changes

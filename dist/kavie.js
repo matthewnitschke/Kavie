@@ -6,7 +6,6 @@
 */
 
 ;(function(ns){
-
   ns.sections = {};
 
   ns.reset = function(){
@@ -49,28 +48,6 @@
     });
   }
 
-  ns.isSectionValidAsync = function(sectionName){
-    var section = ns.sections[sectionName];
-
-    if (ko.unwrap(section.validate)) {
-
-      var childrenPromises = [];
-      var children = Object.keys(section.children);
-      for (var i = 0; i < children.length; i++) {
-        childrenPromises.push(ns.isSectionValidAsync(children[i])); 
-      }
-
-      Promise.all(childrenPromises).then(function(results){
-        if (results.every(isTrue)){
-          return ns.isValidAsync(section.observables);
-        }
-      });
-
-    } else {
-      ns.deactivateSection(sectionName);
-    }
-  }
-
   ns.deactivate = function(vm){
     var kavieObservables = compileObservables(vm);
 
@@ -80,34 +57,29 @@
   }
 
   ns.addVariableValidation = function(sectionName, shouldValidate){
-    var section = ns.sections[sectionName];
-    if (!section){
+    if (!sectionExsists(sectionName)){
       throw "No section found with name: " + sectionName;
     }
 
+    var section = ns.sections[sectionName];
     section.validate = shouldValidate;
   }
 
   ns.addSectionChild = function(parentSectionName, childSectionName){
-    var parentSection = ns.sections[parentSectionName];
-    if (!parentSection) {
+    if (!sectionExsists(parentSectionName)) {
       throw "No parent section found with name: " + parentSectionName;
     }
 
-    var childSection = ns.sections[childSectionName];
-    if (!childSection){
+    if (!sectionExsists(childSectionName)){
       throw "No child section found with name: " + childSectionName;
     }
 
+    var parentSection = ns.sections[parentSectionName];
+    var childSection = ns.sections[childSectionName];
     parentSection.children[childSectionName] = childSection;
   }
 
-  var isKavieObservable = function(observable){
-    return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); 
-  }
-
-  var compileObservables = function(data){
-
+  var compileObservables = function(data) {
     if (!data) {
       throw "Data must not be null";
     }
@@ -146,6 +118,22 @@
     }
 
     return kavieObservables;
+  }
+
+  var isKavieObservable = function(observable) {
+    return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); 
+  }
+
+  var sectionExsists = function(sectionName) {
+    return !(ns.sections[sectionName] === undefined || ns.sections[sectionName] === null);
+  }
+
+  var hasValue = function(value) {
+     return !(value == null || value.length === 0);
+  }
+
+  var isTrue = function(value) {
+    return value;
   }
 
   ns.validatorFunctions = {
@@ -285,12 +273,11 @@
     }
   }
 
-  var hasValue = function(value){
-     return !(value == null || value.length === 0);
+  ns.isSectionValid = function(sectionName) {
+    return ns.isValid(sectionName);
   }
-
-  var isTrue = function(value){
-    return value;
+  ns.isSectionValidAsync = function(sectionName) {
+    return ns.isValidAsync(sectionName);
   }
 
 }(this.Kavie = this.Kavie || {}));
@@ -361,12 +348,15 @@ ko.extenders.kavie = function (target, rules){
               var property = ko.unwrap(rules[key]); 
               validatorObject.property = property;
 
-              validatorObject.validator(property, newValue, function(isValid, e, r){
+              var valObj = validatorObject; 
+
+              validatorObject.validator(property, newValue, function(isValid){
                 return callback({
                   isValid: isValid,
-                  validatorObject: validatorObject
+                  validatorObject: valObj
                 })
               });
+
             });
 
             promises.push(promise);
@@ -403,8 +393,6 @@ ko.extenders.kavie = function (target, rules){
         target.hasError(false);
       }
     }
-
-
 
     target.startValidation = function(){
         target.subscription = target.subscribe(validate); 
