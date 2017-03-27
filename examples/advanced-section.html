@@ -53,7 +53,7 @@
       Kavie.addSectionChild("first", "first-sub");
 
       self.submit = function(){
-        if (Kavie.isSectionValid("first")){
+        if (Kavie.isValid("first")){
           console.log("All Good!");
         } else {
           console.log("Oh No!");
@@ -61,11 +61,11 @@
       }
 
       self.submitSub = function(){
-        Kavie.isSectionValid("first-sub");
+        Kavie.isValid("first-sub");
       }
 
       self.deactivate = function(){
-        Kavie.deactivateSection("first")
+        Kavie.deactivate("first")
       }
     }
     ko.applyBindings(new ViewModel());
