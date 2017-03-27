@@ -305,9 +305,11 @@
 
   // exists for legacy reasons. [3/26/2017]
   ns.isSectionValid = function(sectionName) {
+    console.warn("isSectionValid is depricated and will be removed in the next release. Please use isValid('sectionName') instead");
     return ns.isValid(sectionName);
   }
   ns.isSectionValidAsync = function(sectionName) {
+    console.warn("isSectionValidAsync is depricated and will be removed in the next release. Please use isValidAsync('sectionName') instead");
     return ns.isValidAsync(sectionName);
   }
 

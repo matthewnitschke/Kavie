@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 2.1.0
+    Version: 2.1.1
 */
 
 ;(function(ns){
@@ -276,9 +276,11 @@
   }
 
   ns.isSectionValid = function(sectionName) {
+    console.warn("isSectionValid is depricated and will be removed in the next release. Please use isValid('sectionName') instead");
     return ns.isValid(sectionName);
   }
   ns.isSectionValidAsync = function(sectionName) {
+    console.warn("isSectionValidAsync is depricated and will be removed in the next release. Please use isValidAsync('sectionName') instead");
     return ns.isValidAsync(sectionName);
   }
 
