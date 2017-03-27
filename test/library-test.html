@@ -19,230 +19,161 @@
     async: true,
     validator: function(propVal, eleVal, callback) {
       setTimeout(function(){
-        callback(propVal);
-      }, 100);
+        callback(eleVal == "true");
+      }, propVal);
     }
   }
 
-  QUnit.test("Basic Functionality", function(assert) {
+  QUnit.test("Basic", function(assert) {
+    // Simple test of required single observable validation
     Kavie.reset();
-
-    var basicViewModel = {
-      value: ko.observable().extend({ kavie: { required: true, minLength: 2 } })
-    }
-
-    assert.equal(Kavie.isValid(basicViewModel), false);
-
-    basicViewModel.value("a"); // still doesnt work for minLength validator
-    assert.equal(Kavie.isValid(basicViewModel), false);
-
-    basicViewModel.value("abc"); // now it should be true
-    assert.equal(Kavie.isValid(basicViewModel), true);
-  });
-
-  QUnit.test("Validator Methods Order", function(assert){
-      Kavie.reset();
-      var basicViewModel = {
-        value: ko.observable().extend({
-          kavie: {
-            required: true,
-            birthdate: true
-          }
-        })
-      }
-
-      assert.equal(Kavie.isValid(basicViewModel), false)
-
-      basicViewModel = {
-        value: ko.observable().extend({
-          kavie: {
-            birthdate: true,
-            required: true,
-          }
-        })
-      }
-
-      assert.equal(Kavie.isValid(basicViewModel), false)
-  })
-
-  QUnit.test("Sections Basics", function(assert){
-    Kavie.reset();
-
     var vm = {
-      sectionValue: ko.observable().extend({
-        kavie: {
-          required: true,
-          section: "section"
-        }
-      }),
-
-      sectionValueTwo: ko.observable().extend({
-        kavie: {
-          required: true,
-          section: "section"
-        }
-      }),
-
-      otherValue: ko.observable().extend({
-        kavie: { required: true }
-      }),
+      v: ko.observable().extend({ kavie: { required: true } })
     }
-
-    assert.equal(Kavie.isValid("section"), false);
-
-    vm.sectionValue("er");
-    vm.sectionValueTwo("er");
-
-    assert.equal(Kavie.isValid("section"), true);
-
     assert.equal(Kavie.isValid(vm), false);
 
-    vm.otherValue(true);
-
+    vm.v("asdf");
     assert.equal(Kavie.isValid(vm), true);
-
   });
 
-  QUnit.test("Variable Sections", function(assert){
+  QUnit.test("Basic Async", function(assert){
+    // tests a simple async boolean function
     Kavie.reset();
 
     var vm = {
-      sectionValue: ko.observable().extend({
-        kavie: {
-          required: true,
-          section: "section"
-        }
-      }),
-      validate: ko.observable(false)
-    }
-
-    Kavie.addVariableValidation("section", vm.validate);
-
-    assert.equal(Kavie.isValid("section"), true);
-
-    vm.validate(true);
-
-    assert.equal(Kavie.isValid("section"), false);
-  });
-
-  QUnit.test("Children Sections", function(assert){
-    Kavie.reset();
-
-    var vm = {
-      value: ko.observable().extend({
-        kavie: {
-          required: true,
-          section: "parent"
-        }
-      }),
-      valueTwo: ko.observable().extend({
-        kavie: {
-          required: true,
-          section: "child"
-        }
-      })
-    }
-
-    Kavie.addSectionChild("parent", "child");
-
-    assert.equal(Kavie.isValid("parent"), false);
-    vm.value("asdf");
-    assert.equal(Kavie.isValid("parent"), false);
-    vm.valueTwo("asdf");
-    assert.equal(Kavie.isValid("parent"), true);
-
-  });
-
-  QUnit.test("Async Validation", function(assert){
-    Kavie.reset();
-    // simple true/false single async testing
-
-    var vm = {
-      value: ko.observable().extend({ kavie: { asyncBool: true } })
+      v: ko.observable().extend({ kavie: { asyncBool: 100 } })
     }
 
     var done = assert.async();
-    Kavie.isValidAsync(vm).then(function(isValid){
-      assert.equal(isValid, true);
-      done();
-    });
-
-    vm.value = ko.observable().extend({ kavie:{ asyncBool: false } })
-
     var done2 = assert.async();
     Kavie.isValidAsync(vm).then(function(isValid){
       assert.equal(isValid, false);
+      done();
+
+      vm.v("true");
+      Kavie.isValidAsync(vm).then(function(isValid){
+        assert.equal(isValid, true);
+        done2();
+      })
+    });
+
+  })
+
+  QUnit.test("Section", function(assert){
+    Kavie.reset();
+    var vm = {
+      v: ko.observable("asdf").extend({ kavie: { section: "a", required: true } }),
+      v2: ko.observable().extend({ kavie: { section: "b", required: true } })
+    }
+
+    assert.equal(Kavie.isValid(vm), false);
+    assert.equal(Kavie.isValid("a"), true);
+  })
+
+  QUnit.test("Section Async", function(assert){
+    Kavie.reset();
+    var vm = {
+      v: ko.observable("true").extend({ kavie: { section: "a", asyncBool: 100 } }),
+      v2: ko.observable().extend({ kavie: { section: "b", asyncBool: 500 } })
+    }
+
+    var done = assert.async();
+    Kavie.isValidAsync(vm).then(function(isValid){
+      assert.equal(isValid, false);
+      done();
+    });
+
+    var done2 = assert.async();
+    Kavie.isValidAsync("a").then(function(isValid){
+      assert.equal(isValid, true);
       done2();
     });
 
-    // Multi Variable propVal and eleVal testing
-    Kavie.validatorFunctions.asyncVals = {
-      async: true,
-      validator: function(propVal, eleVal, callback) {
-        setTimeout(function(){
-          callback(propVal === eleVal);
-        }, 1000);
-      }
-    }
-
-    vm.value = ko.observable().extend({ kavie: { asyncVals: '1' } })
-    vm.valueTwo = ko.observable().extend({ kavie: { asyncVals: '2' } })
-
-    var done3 = assert.async();
-    Kavie.isValidAsync(vm).then(function(isValid){
-      assert.equal(isValid, false);
-      done3();
-    });
-
-    vm.value('1');
-    var done4 = assert.async();
-    Kavie.isValidAsync(vm).then(function(isValid){
-      assert.equal(isValid, false);
-      done4();
-    });
-
-    vm.value('1');
-    vm.valueTwo('2');
-    var done5 = assert.async();
-    Kavie.isValidAsync(vm).then(function(isValid){
-      assert.equal(isValid, true);
-      done5();
-    });
-
   })
 
-  QUnit.test("Async Sections", function(assert){
+  QUnit.test("Section Children", function(assert){
     Kavie.reset();
 
     var vm = {
-      valSecA: ko.observable().extend({ kavie: { asyncBool: true, section: "a" } }),
-      valSecB: ko.observable().extend({ kavie: { asyncBool: false, section: "b"} })
+      v: ko.observable("asdf").extend({ kavie: { section: "a", required: true } }),
+      v2: ko.observable().extend({ kavie: { section: "b", required: true } })
     }
 
-    var done = assert.async();
-    Kavie.isSectionValidAsync("a").then(function(isValid){
-      assert.equal(isValid, true);
-      done();
-    })
+    Kavie.addSectionChild("a", "b");
 
+    assert.equal(Kavie.isValid("a"), false);
+    vm.v2("asdf");
+    assert.equal(Kavie.isValid("a"), true);
   })
 
-  QUnit.test("Async Children", function(assert){
+  QUnit.test("Section Children Async", function(assert){
     Kavie.reset();
-
     var vm = {
-      valSecA: ko.observable().extend({ kavie: { asyncBool: true, section: "parent" } }),
-      valSecB: ko.observable().extend({ kavie: { asyncBool: false, section: "child"} })
+      v: ko.observable("true").extend({ kavie: { section: "a", asyncBool: 100 } }),
+      v2: ko.observable().extend({ kavie: { section: "b", asyncBool: 500 } })
     }
 
-    Kavie.addSectionChild("parent", "child");
+    Kavie.addSectionChild("a", "b");
 
     var done = assert.async();
-    Kavie.isSectionValidAsync("parent").then(function(isValid){
+    Kavie.isValidAsync("a").then(function(isValid){
       assert.equal(isValid, false);
       done();
-    })
-  })
+
+      vm.v2("true");
+      var done2 = assert.async();
+      Kavie.isValidAsync("a").then(function(isValid){
+        assert.equal(isValid, true);
+        done2();
+      });
+    });
+
+
+  });
+
+  QUnit.test("Section Variable Validation", function(assert){
+    Kavie.reset();
+    var vm = {
+      v: ko.observable("asdf").extend({ kavie: { section: "a", required: true } }),
+      v2: ko.observable().extend({ kavie: { section: "b", required: true } }),
+      validate2: ko.observable(false)
+    }
+
+    Kavie.addSectionChild("a", "b");
+    Kavie.addVariableValidation("b", vm.validate2);
+
+    assert.equal(Kavie.isValid("a"), true);
+    vm.validate2(true);
+    assert.equal(Kavie.isValid("a"), false);
+  });
+
+  QUnit.test("Section Variable Validation Async", function(assert){
+    Kavie.reset();
+    var vm = {
+      v: ko.observable("true").extend({ kavie: { section: "a", asyncBool: 100 } }),
+      v2: ko.observable().extend({ kavie: { section: "b", asyncBool: 100 } }),
+      validate2: ko.observable(false)
+    }
+
+    Kavie.addSectionChild("a", "b");
+    Kavie.addVariableValidation("b", vm.validate2);
+
+    var done = assert.async();
+    Kavie.isValidAsync("a").then(function(isValid){
+      assert.equal(isValid, true);
+      done();
+
+      vm.validate2(true);
+
+      var done2 = assert.async();
+      Kavie.isValidAsync("a").then(function(isValid){
+        assert.equal(isValid, false);
+        done2();
+      });
+    });
+
+
+  });
   </script>
 
 </head>
