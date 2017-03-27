@@ -69,27 +69,33 @@
   }
 
   ns.addVariableValidation = function(sectionName, shouldValidate){
-    if (!sectionExsists(sectionName)){
-      throw "No section found with name: " + sectionName;
+    var section = ns.sections[sectionName];
+    if (!section){
+      // we create new sections if they dont exsists because of observables being added to the sections dynamiclly, and asynclly
+      ns.sections[sectionName] = new KavieSection();
+      section = ns.sections[sectionName];
     }
 
-    var section = ns.sections[sectionName];
     section.validate = shouldValidate;
   }
 
   ns.addSectionChild = function(parentSectionName, childSectionName){
     // ensure parentSection exsists
-    if (!sectionExsists(parentSectionName)) {
-      throw "No parent section found with name: " + parentSectionName;
+    var parentSection = ns.sections[parentSectionName];
+    if (!parentSection) {
+      // we create new sections if they dont exsists because of observables being added to the sections dynamiclly, and asynclly
+      ns.sections[parentSectionName] = new KavieSection();
+      parentSection = ns.sections[parentSectionName];
     }
 
     // ensure childSection exsists
-    if (!sectionExsists(childSectionName)){
-      throw "No child section found with name: " + childSectionName;
+    var childSection = ns.sections[childSectionName];
+    if (!childSection){
+      // we create new sections if they dont exsists because of observables being added to the sections dynamiclly, and asynclly
+      ns.sections[childSectionName] = new KavieSection();
+      childSection = ns.sections[childSectionName];
     }
 
-    var parentSection = ns.sections[parentSectionName];
-    var childSection = ns.sections[childSectionName];
     parentSection.children[childSectionName] = childSection;
   }
 

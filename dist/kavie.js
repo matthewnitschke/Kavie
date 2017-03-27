@@ -59,25 +59,28 @@
   }
 
   ns.addVariableValidation = function(sectionName, shouldValidate){
-    if (!sectionExsists(sectionName)){
-      throw "No section found with name: " + sectionName;
+    var section = ns.sections[sectionName];
+    if (!section){
+      ns.sections[sectionName] = new KavieSection();
+      section = ns.sections[sectionName];
     }
 
-    var section = ns.sections[sectionName];
     section.validate = shouldValidate;
   }
 
   ns.addSectionChild = function(parentSectionName, childSectionName){
-    if (!sectionExsists(parentSectionName)) {
-      throw "No parent section found with name: " + parentSectionName;
-    }
-
-    if (!sectionExsists(childSectionName)){
-      throw "No child section found with name: " + childSectionName;
-    }
-
     var parentSection = ns.sections[parentSectionName];
+    if (!parentSection) {
+      ns.sections[parentSectionName] = new KavieSection();
+      parentSection = ns.sections[parentSectionName];
+    }
+
     var childSection = ns.sections[childSectionName];
+    if (!childSection){
+      ns.sections[childSectionName] = new KavieSection();
+      childSection = ns.sections[childSectionName];
+    }
+
     parentSection.children[childSectionName] = childSection;
   }
 
