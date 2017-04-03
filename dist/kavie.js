@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 2.1.1
+    Version: 2.1.2
 */
 
 ;(function(ns){
@@ -313,7 +313,14 @@ ko.extenders.kavie = function (target, rules){
       rules.section = "";
     }
 
-    target.rules = rules;
+    if (target.rules){
+      var rulesKeys = Object.keys(rules);
+      for(var i = 0; i < rulesKeys.length; i ++){
+        target.rules[rulesKeys[i]] = rules[rulesKeys[i]];
+      }
+    } else {
+      target.rules = rules;
+    }
 
     function validate(newValue){
       var rules = target.rules;

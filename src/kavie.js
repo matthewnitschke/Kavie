@@ -348,8 +348,15 @@ ko.extenders.kavie = function (target, rules){
       rules.section = "";
     }
 
-    // add the passed in rules to the observable
-    target.rules = rules;
+    // if rules
+    if (target.rules){
+      var rulesKeys = Object.keys(rules);
+      for(var i = 0; i < rulesKeys.length; i ++){
+        target.rules[rulesKeys[i]] = rules[rulesKeys[i]];
+      }
+    } else {
+      target.rules = rules;
+    }
 
     // Simply checks each rule attached to this observable and changes hasError variable
     function validate(newValue){

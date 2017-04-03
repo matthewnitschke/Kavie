@@ -189,6 +189,18 @@
       done();
     })
   })
+
+  QUnit.test("Extend Chaining", function(assert){
+    Kavie.reset();
+
+    var vm = {
+      v: ko.observable("asdf").extend({ kavie: {required: true } })
+    }
+
+    vm.v.extend({kavie: { minLength: 5 }});
+
+    assert.equal(Kavie.isValid(vm), false);
+  })
   </script>
 
 </head>
