@@ -1,7 +1,7 @@
 ![capture](https://cloud.githubusercontent.com/assets/6363089/22178397/32213fe4-dff2-11e6-86e5-f60431852bd7.PNG)
 
-
-## Kavie?
+[![npm version](https://badge.fury.io/js/kavie.svg)](https://badge.fury.io/js/kavie)
+# Kavie
 Kavie is a small and easy to use knockout js validation library.
 
 ## Installation
