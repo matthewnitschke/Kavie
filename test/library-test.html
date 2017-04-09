@@ -200,7 +200,23 @@
     vm.v.extend({kavie: { minLength: 5 }});
 
     assert.equal(Kavie.isValid(vm), false);
-  })
+  });
+
+  QUnit.test("Section Validator Rules", function(assert){
+    var vm = {
+      v: ko.observable().extend({ kavie: { section: "test", date: true } })
+    }
+
+    Kavie.addSectionValidators("test", {
+      required: true
+    });
+
+    assert.equal(Kavie.isValid("test"), false);
+
+    vm.v("01/01/2000");
+
+    assert.equal(Kavie.isValid("test"), true);
+  });
   </script>
 
 </head>

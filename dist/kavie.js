@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 2.1.2
+    Version: 2.2.0
 */
 
 ;(function(ns){
@@ -59,29 +59,21 @@
   }
 
   ns.addVariableValidation = function(sectionName, shouldValidate){
-    var section = ns.sections[sectionName];
-    if (!section){
-      ns.sections[sectionName] = new KavieSection();
-      section = ns.sections[sectionName];
-    }
-
+    var section = getSection(sectionName);
     section.validate = shouldValidate;
   }
 
   ns.addSectionChild = function(parentSectionName, childSectionName){
-    var parentSection = ns.sections[parentSectionName];
-    if (!parentSection) {
-      ns.sections[parentSectionName] = new KavieSection();
-      parentSection = ns.sections[parentSectionName];
-    }
-
-    var childSection = ns.sections[childSectionName];
-    if (!childSection){
-      ns.sections[childSectionName] = new KavieSection();
-      childSection = ns.sections[childSectionName];
-    }
+    var parentSection = getSection(parentSectionName);
+    var childSection = getSection(childSectionName);
 
     parentSection.children[childSectionName] = childSection;
+  }
+
+  ns.addSectionValidators = function(sectionName, sectionRules){
+    var section = getSection(sectionName);
+
+    section.rules = ko.utils.extend(section.rules, sectionRules);
   }
 
   var compileObservables = function(data) {
@@ -98,19 +90,26 @@
 
     } else if (typeof data === "string"){
       var section = ns.sections[data];
-      if (!section){
-        throw "No section found with this name: " + data;
-      }
 
-      if (ko.unwrap(section.validate)){
-        var childrenKeys = Object.keys(section.children);
+      if (section){
+        if (ko.unwrap(section.validate)){
+          var childrenKeys = Object.keys(section.children);
 
-        for(var i = 0; i < childrenKeys.length; i ++){
-          kavieObservables = kavieObservables.concat(compileObservables(childrenKeys[i]));
+          for(var i = 0; i < childrenKeys.length; i ++){
+            kavieObservables = kavieObservables.concat(compileObservables(childrenKeys[i]));
+          }
+
+          kavieObservables = kavieObservables.concat(section.observables);
+
+          if (Object.keys(section.rules).length > 0){
+            kavieObservables = kavieObservables.map(function(observable){
+                observable.rules = ko.utils.extend(observable.rules, section.rules);
+                return observable;
+            });
+          }
         }
-
-        kavieObservables = kavieObservables.concat(section.observables);
-
+      } else {
+        console.warn("Kavie - No section found with the name: " + data);
       }
 
     } else {
@@ -125,12 +124,17 @@
     return kavieObservables;
   }
 
-  var isKavieObservable = function(observable) {
-    return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); 
+  var getSection = function(sectionName){
+    var section = ns.sections[sectionName];
+    if (!section){
+      ns.sections[sectionName] = new KavieSection();
+      section = ns.sections[sectionName];
+    }
+    return section;
   }
 
-  var sectionExsists = function(sectionName) {
-    return !(ns.sections[sectionName] === undefined || ns.sections[sectionName] === null);
+  var isKavieObservable = function(observable) {
+    return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); 
   }
 
   var hasValue = function(value) {
@@ -294,6 +298,8 @@ function KavieSection(){
 
   self.observables = [];
 
+  self.rules = [];
+
   self.children = {};
 
   self.validate = true; 
@@ -310,14 +316,11 @@ ko.extenders.kavie = function (target, rules){
       }
 
       Kavie.sections[rules.section].observables.push(target);
-      rules.section = "";
+      rules.section = ""; 
     }
 
     if (target.rules){
-      var rulesKeys = Object.keys(rules);
-      for(var i = 0; i < rulesKeys.length; i ++){
-        target.rules[rulesKeys[i]] = rules[rulesKeys[i]];
-      }
+      target.rules = ko.utils.extend(target.rules, rules);
     } else {
       target.rules = rules;
     }

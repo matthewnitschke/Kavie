@@ -80,6 +80,13 @@
     parentSection.children[childSectionName] = childSection;
   }
 
+  ns.addSectionValidators = function(sectionName, sectionRules){
+    var section = getSection(sectionName);
+
+    // merge secion.validators and sectionValidators objects
+    section.rules = ko.utils.extend(section.rules, sectionRules);
+  }
+
   var compileObservables = function(data) {
     // returns an array of all kavieObservables found in the data passed in
     if (!data) {
@@ -97,19 +104,28 @@
     } else if (typeof data === "string"){
       // if data is a string, data is a sectionName
       var section = ns.sections[data];
-      if (!section){
-        throw "No section found with this name: " + data;
-      }
 
-      if (ko.unwrap(section.validate)){
-        var childrenKeys = Object.keys(section.children);
+      if (section){
+        if (ko.unwrap(section.validate)){
+          var childrenKeys = Object.keys(section.children);
 
-        for(var i = 0; i < childrenKeys.length; i ++){
-          kavieObservables = kavieObservables.concat(compileObservables(childrenKeys[i]));
+          for(var i = 0; i < childrenKeys.length; i ++){
+            // recursivelly compile all children's observables
+            kavieObservables = kavieObservables.concat(compileObservables(childrenKeys[i]));
+          }
+
+          kavieObservables = kavieObservables.concat(section.observables);
+
+          // if section contains its own validation rules
+          if (Object.keys(section.rules).length > 0){
+            kavieObservables = kavieObservables.map(function(observable){
+                observable.rules = ko.utils.extend(observable.rules, section.rules);
+                return observable;
+            });
+          }
         }
-
-        kavieObservables = kavieObservables.concat(section.observables);
-
+      } else {
+        console.warn("Kavie - No section found with the name: " + data);
       }
 
     } else {
@@ -314,6 +330,8 @@ function KavieSection(){
 
   self.observables = [];
 
+  self.rules = [];
+
   self.children = {};
 
   self.validate = true; // initially always validate
@@ -333,7 +351,7 @@ ko.extenders.kavie = function (target, rules){
       }
 
       Kavie.sections[rules.section].observables.push(target);
-      rules.section = "";
+      rules.section = ""; // clear the section in rules after we add the observable
     }
 
     // if rules already exists merge both rules objects together
