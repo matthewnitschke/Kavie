@@ -344,12 +344,9 @@ ko.extenders.kavie = function (target, rules){
       rules.section = "";
     }
 
-    // if rules
+    // if rules already exists merge both rules objects together
     if (target.rules){
-      var rulesKeys = Object.keys(rules);
-      for(var i = 0; i < rulesKeys.length; i ++){
-        target.rules[rulesKeys[i]] = rules[rulesKeys[i]];
-      }
+      target.rules = ko.utils.extend(target.rules, rules);
     } else {
       target.rules = rules;
     }
