@@ -25,4 +25,8 @@ gulp.task('scripts', function() {
         .pipe(gulp.dest('dist'));
 });
 
+gulp.task('watch', function(){
+  gulp.watch("src/kavie.js", ['scripts'])
+})
+
 gulp.task('default', ['scripts']);
