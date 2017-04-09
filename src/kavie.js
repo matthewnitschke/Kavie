@@ -149,10 +149,6 @@
     return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); // when you extend an observable with kavie, it addes hasError.
   }
 
-  var sectionExsists = function(sectionName) {
-    return !(ns.sections[sectionName] === undefined || ns.sections[sectionName] === null);
-  }
-
   var hasValue = function(value) {
      return !(value == null || value.length === 0);
   }
