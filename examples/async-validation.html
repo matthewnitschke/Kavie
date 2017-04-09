@@ -57,7 +57,7 @@
       Kavie.addVariableValidation("basic", self.sectionToggle);
 
       self.submit = function(){
-        Kavie.isSectionValidAsync("basic").then(function(isValid){
+        Kavie.isValidAsync("basic").then(function(isValid){
           console.log(isValid);
         });
       }

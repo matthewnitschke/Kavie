@@ -71,7 +71,7 @@
       });
 
       self.submitOne = function(){
-        if (Kavie.isValid(Kavie.sections["first"])){
+        if (Kavie.isValid("first")){
           console.log("All Good!");
         } else {
           console.log("Oh No!");
@@ -79,11 +79,11 @@
       }
 
       self.deactivateOne = function(){
-        Kavie.deactivate(Kavie.sections["first"]);
+        Kavie.deactivate("first");
       }
 
       self.submitTwo = function(){
-        if (Kavie.isValid(Kavie.sections["second"])){
+        if (Kavie.isValid("second")){
           console.log("Yay! Completely Good!");
         } else {
           console.log("Agh! Not good!");
@@ -91,7 +91,7 @@
       }
 
       self.deactivateTwo = function(){
-        Kavie.deactivate(Kavie.sections["second"]);
+        Kavie.deactivate("second");
       }
     }
     ko.applyBindings(new ViewModel());

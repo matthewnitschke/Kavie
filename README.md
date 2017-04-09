@@ -1,7 +1,7 @@
 ![capture](https://cloud.githubusercontent.com/assets/6363089/22178397/32213fe4-dff2-11e6-86e5-f60431852bd7.PNG)
 
-
-## Kavie?
+[![npm version](https://badge.fury.io/js/kavie.svg)](https://badge.fury.io/js/kavie)
+# Kavie
 Kavie is a small and easy to use knockout js validation library.
 
 ## Installation
@@ -43,7 +43,7 @@ Kavie works by adding a hasError variable to the observable. This gives the flex
 <span data-bind="visible: value.hasError">Uh Oh! There was an error!</span>
 ```
 
-#Validation Messages
+# Validation Messages
 You can use a validation message to display to the user if the validation failed
 
 ```html
@@ -52,7 +52,7 @@ You can use a validation message to display to the user if the validation failed
 ```
 These validation messages are stored on the validators see the Custom Rules section for more information
 
-#Validation rules
+# Validation rules
 There are a few validation rules build in
 
 ```javascript
@@ -75,5 +75,5 @@ It is important to note that on the date, birthdate, phone, email, and numeric v
 # More Features
 There is much more to kavie, but in order to keep the readme simple the advanced features have been moved to the [wiki](https://github.com/matthewnitschke/Kavie/wiki)
 
-##Problems?
+## Problems?
 Thanks of taking a look at kavie. If you have any problems let me know and I would love to help you out

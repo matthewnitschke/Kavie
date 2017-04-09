@@ -7,8 +7,6 @@
 
 // This is a singleton pattern for the Kavie object to validate against
 ;(function(ns){
-
-  // holds out observables and sections
   ns.sections = {};
 
   ns.reset = function(){
@@ -16,11 +14,17 @@
   }
 
   // turn validaton on
-  ns.isValid = function(vm){
-    // vm can be a viewModel or a Kavie.section
+  ns.isValid = function(properties){
+    // propeties can be:
+    // self: an object with kavie observables
+    // [self, a, foo]: an array of objects with kavie observables
+    // "sectionA": a string of the name of a kavie section
+    // ["sectionA", "sectionB"]: an array of section names
+    // ["sectionA", self, foo, "sectionB"]: an array of a mix of the previous
+
     var isValid = true;
 
-    var kavieObservables = compileObservables(vm);
+    var kavieObservables = compileObservables(properties);
 
     for(var i = 0; i < kavieObservables.length; i ++){
       kavieObservables[i].startValidation();
@@ -47,67 +51,12 @@
       }
     }
 
-    return promiseAllBool(promises);
-  }
+    var synchronousMethodsValid = ns.isValid(vm);
 
-  ns.isSectionValid = function(sectionName){
-    var section = ns.sections[sectionName];
-
-    var isValid = true;
-
-    if (ko.unwrap(section.validate)) {
-
-      var children = Object.keys(section.children);
-      for (var i = 0; i < children.length; i++) {
-        var childValid = ns.isSectionValid(children[i]); // recursivlly check children sections
-
-        if (!childValid) { // if a child is not valid, the entire section isn't
-          isValid = false;
-        }
-      }
-
-      var sectionObsValid = ns.isValid(section.observables);
-
-      if (!sectionObsValid){
-        isValid = false;
-      }
-
-    } else {
-      // if the section isn't validated, deactivate it
-      ns.deactivateSection(sectionName);
-    }
-
-    return isValid;
-  }
-
-  ns.isSectionValidAsync = function(sectionName){
-    var section = ns.sections[sectionName];
-
-    var promises = [];
-
-    if (ko.unwrap(section.validate)) {
-
-      var children = Object.keys(section.children);
-      for (var i = 0; i < children.length; i++) {
-        var childValid = ns.isSectionValid(children[i]); // recursivlly check children sections
-
-        if (!childValid) { // if a child is not valid, the entire section isn't
-          isValid = false;
-        }
-      }
-
-      var promise = ns.isValidAsync(section.observables);
-
-      if (promise){
-        promises.push(promise);
-      }
-
-    } else {
-      // if the section isn't validated, deactivate it
-      ns.deactivateSection(sectionName);
-    }
-
-    return promiseAllBool(promises);
+    return Promise.all(promises).then(function(results){
+      // if every element in results is true return true, if any false, return false
+      return results.every(isTrue) && synchronousMethodsValid;
+    });
   }
 
   // turns off validation
@@ -119,60 +68,99 @@
     }
   }
 
-  ns.deactivateSection = function(sectionName){
-    var section = ns.sections[sectionName];
-
-    var children = Object.keys(section.children);
-    for(var i = 0; i < children.length; i ++){
-      ns.deactivateSection(children[i]); // recursivlly go through all the section's children
-    }
-
-    ns.deactivate(section.observables);
-  }
-
   ns.addVariableValidation = function(sectionName, shouldValidate){
     var section = ns.sections[sectionName];
     if (!section){
-      section = ns.sections[sectionName] = new KavieSection();
+      // we create new sections if they dont exsists because of observables being added to the sections dynamiclly, and asynclly
+      ns.sections[sectionName] = new KavieSection();
+      section = ns.sections[sectionName];
     }
 
     section.validate = shouldValidate;
   }
 
   ns.addSectionChild = function(parentSectionName, childSectionName){
+    // ensure parentSection exsists
     var parentSection = ns.sections[parentSectionName];
     if (!parentSection) {
-      parentSection = ns.sections[parentSectionName] = new KavieSection();
+      // we create new sections if they dont exsists because of observables being added to the sections dynamiclly, and asynclly
+      ns.sections[parentSectionName] = new KavieSection();
+      parentSection = ns.sections[parentSectionName];
     }
 
-    parentSection.children[childSectionName] = new KavieSection();
+    // ensure childSection exsists
+    var childSection = ns.sections[childSectionName];
+    if (!childSection){
+      // we create new sections if they dont exsists because of observables being added to the sections dynamiclly, and asynclly
+      ns.sections[childSectionName] = new KavieSection();
+      childSection = ns.sections[childSectionName];
+    }
+
+    parentSection.children[childSectionName] = childSection;
   }
 
-  // simple helper method to see if an observable has been extended with the kavie extender
-  var isKavieObservable = function(observable){
-    return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); // when you extend an observable with kavie, it addes hasError.
-  }
-
-  // returns an array of all kavieObservables found in the viewModel potentially passed in,
-  // and attached to the Kavie object it's self
-  var compileObservables = function(vm){
+  var compileObservables = function(data) {
+    // returns an array of all kavieObservables found in the data passed in
+    if (!data) {
+      throw "Data must not be null";
+    }
 
     var kavieObservables = [];
 
-    if (vm && vm.hasOwnProperty("observables")){
-      vm = vm.observables;
-    }
+    if (Array.isArray(data)){
+      // if data is an array, recursivlly compile each array item
+      for(var i = 0; i < data.length; i ++){
+        kavieObservables = kavieObservables.concat(compileObservables(data[i]));
+      }
 
-    if (vm){
-      var keys = Object.keys(vm);
-      for(var i = 0; i < keys.length; i ++){
-        if (isKavieObservable(vm[keys[i]])){
-          kavieObservables.push(vm[keys[i]]);
+    } else if (typeof data === "string"){
+      // if data is a string, data is a sectionName
+      var section = ns.sections[data];
+      if (!section){
+        throw "No section found with this name: " + data;
+      }
+
+      if (ko.unwrap(section.validate)){
+        var childrenKeys = Object.keys(section.children);
+
+        for(var i = 0; i < childrenKeys.length; i ++){
+          kavieObservables = kavieObservables.concat(compileObservables(childrenKeys[i]));
+        }
+
+        kavieObservables = kavieObservables.concat(section.observables);
+
+      }
+
+    } else {
+      // data is an object
+      var keys = Object.keys(data);
+      for(var i = 0; i < keys.length; i ++) {
+        if (isKavieObservable(data[keys[i]])) {
+          kavieObservables.push(data[keys[i]]);
         }
       }
     }
 
     return kavieObservables;
+  }
+
+  var isKavieObservable = function(observable) {
+    // simple helper method to see if an observable has been extended with the kavie extender
+    return ko.isObservable(observable) && observable.hasOwnProperty("hasError"); // when you extend an observable with kavie, it addes hasError.
+  }
+
+  var sectionExsists = function(sectionName) {
+    return !(ns.sections[sectionName] === undefined || ns.sections[sectionName] === null);
+  }
+
+  var hasValue = function(value) {
+     return !(value == null || value.length === 0);
+  }
+
+  var isTrue = function(value) {
+    // incredebly simple helper function
+    // to be used in array.every() processes
+    return value;
   }
 
   // built in validator functions
@@ -226,13 +214,32 @@
       validator: function (propVal, eleVal){
         // change date to accept no preceding 0 on month and day
         if (propVal && hasValue(eleVal)){
-          if (eleVal.length >= 8 && eleVal.length <= 10) {
-              if (new Date(eleVal) == "Invalid Date") {
-                  return false;
-              }
-              return true;
-          }
-          return false;
+            date = eleVal;
+
+            // regex matches the patttern of dd/dd/dddd or dd/dd/dd (where d is a digit)
+            var re = /(\d{2})\/(\d{2})\/((\d{4})|(\d{2}))/;
+            if (date.search(re) == -1){
+              return false;
+            }
+
+            var dt = date.split("/");
+
+            // month must be less than 13, greater than 0
+            var month = dt[0];
+            if (parseInt(month) > 12 || parseInt(month) < 1) {
+              return false;
+            }
+
+            var year = dt[2];
+
+            // make sure the day inputed is not greater than the mounth day count
+            var day = dt[1];
+            var daysInMonth = new Date(year, month, 0).getDate();
+            if (parseInt(day) > daysInMonth || parseInt(day) < 1){
+              return false;
+            }
+            return true;
+
         } else {
           return true;
         }
@@ -302,51 +309,15 @@
     }
   }
 
-  var hasValue = function(value){
-     return !(value == null || value.length === 0);
+  // exists for legacy reasons. [3/26/2017]
+  ns.isSectionValid = function(sectionName) {
+    console.warn("isSectionValid is depricated and will be removed in the next release. Please use isValid('sectionName') instead");
+    return ns.isValid(sectionName);
   }
-
-  // Minor modified version of Promise.all
-  // Expects all promises to return a boolean
-  // Returns a promise that resolves true if all promises returned true, false if any are false
-  // Used in asyncValidation
-  var promiseAllBool = function (arr) {
-      var args = Array.prototype.slice.call(arr);
-
-      return new Promise(function (resolve, reject) {
-        if (args.length === 0) return resolve([]);
-        var remaining = args.length;
-
-        function res(i, val) {
-          try {
-            if (val && (typeof val === 'object' || typeof val === 'function')) {
-              var then = val.then;
-              if (typeof then === 'function') {
-                then.call(val, function (val) {
-                  res(i, val);
-                }, reject);
-                return;
-              }
-            }
-            args[i] = val;
-            if (--remaining === 0) {
-              var containsFalse = args.indexOf(false);
-              if(containsFalse > -1){
-                resolve(false);
-              } else {
-                resolve(true);
-              }
-            }
-          } catch (ex) {
-            reject(ex);
-          }
-        }
-
-        for (var i = 0; i < args.length; i++) {
-          res(i, args[i]);
-        }
-      });
-    };
+  ns.isSectionValidAsync = function(sectionName) {
+    console.warn("isSectionValidAsync is depricated and will be removed in the next release. Please use isValidAsync('sectionName') instead");
+    return ns.isValidAsync(sectionName);
+  }
 
 }(this.Kavie = this.Kavie || {}));
 
@@ -364,48 +335,53 @@ function KavieSection(){
 // This is the knockout js extender
 // simply adds a few things to the observable so we can access these from the kavie object
 ko.extenders.kavie = function (target, rules){
-    // make a copy of rules because we delete from it, and that would delete the key from the object that is passed in
-    var localRules = rules;
-
     target.hasError = ko.observable(); // tracks whether this observable is valid or not
     target.errorMessage = ko.observable();
 
     // if section exsists add observable to it
-    if (localRules.section){
-      if (!Kavie.sections[localRules.section]){
-        Kavie.sections[localRules.section] = new KavieSection();
+    if (rules.section){
+      if (!Kavie.sections[rules.section]){
+        Kavie.sections[rules.section] = new KavieSection();
       }
 
-      Kavie.sections[localRules.section].observables.push(target);
-      localRules.section = "";
+      Kavie.sections[rules.section].observables.push(target);
+      rules.section = "";
     }
 
-    // add the passed in rules to the observable
-    target.rules = localRules;
+    // if rules
+    if (target.rules){
+      var rulesKeys = Object.keys(rules);
+      for(var i = 0; i < rulesKeys.length; i ++){
+        target.rules[rulesKeys[i]] = rules[rulesKeys[i]];
+      }
+    } else {
+      target.rules = rules;
+    }
 
     // Simply checks each rule attached to this observable and changes hasError variable
     function validate(newValue){
       var rules = target.rules;
 
-      for (key in rules){
-          for (funcKey in Kavie.validatorFunctions){
-              if (key == funcKey) {
-                if (!Kavie.validatorFunctions[key].async){
-                  var validatorFunction;
-                  if (typeof Kavie.validatorFunctions[funcKey] === "function"){
-                    validatorFunction = Kavie.validatorFunctions[funcKey];
-                  } else {
-                    validatorFunction = Kavie.validatorFunctions[funcKey].validator;
-                  }
+      var isObservableValid = true;
+      var erroredOutValidator = null; // the validator that was false
 
-                  var validatorProperty = ko.unwrap(rules[key]); // unwrap because it could be an observable (for dynamic properties)
-                  var isValid = validatorFunction(validatorProperty, newValue);
+      for(key in rules){
+        var validatorObject = Kavie.validatorFunctions[key];
 
-                  setValidationResult(isValid, key);
-                }
-              }
+        if (validatorObject && !validatorObject.async){ // make sure the validator exsists and isn't async
+
+          var property = ko.unwrap(rules[key]);
+          var isValid = validatorObject.validator(property, newValue);
+
+          if (isObservableValid && !isValid){
+            isObservableValid = false;
+            validatorObject.property = property; // record the property
+            erroredOutValidator = validatorObject;
           }
+        }
       }
+
+      setValidationResult(isObservableValid, erroredOutValidator);
     }
 
     // async version of validating
@@ -415,54 +391,61 @@ ko.extenders.kavie = function (target, rules){
         var promises = [];
 
         for (key in rules){
-            for (funcKey in Kavie.validatorFunctions){
-                if (key == funcKey) {
-                  if (Kavie.validatorFunctions[key].async){
-                    var validatorFunction;
-                    if (typeof Kavie.validatorFunctions[funcKey] === "function"){
-                      validatorFunction = Kavie.validatorFunctions[funcKey];
-                    } else {
-                      validatorFunction = Kavie.validatorFunctions[funcKey].validator;
-                    }
+          var validatorObject = Kavie.validatorFunctions[key];
 
-                    var promise = new Promise(function(callback){
-                      var validatorProperty = ko.unwrap(rules[key]); // unwrap because it could be an observable
-                      validatorFunction(validatorProperty, newValue, callback);
-                    }).then(function(isValid){
-                      setValidationResult(isValid, key);
-                      return isValid;
-                    });
+          if (validatorObject && validatorObject.async) {
 
-                    promises.push(promise);
-                  }
-                }
-            }
+            var promise = new Promise(function(callback){
+
+              var property = ko.unwrap(rules[key]); // unwrap because it could be an observable
+              validatorObject.property = property;
+
+              var valObj = validatorObject; // create a version of validator object locally so it can be accessed in the validator callback
+
+              validatorObject.validator(property, newValue, function(isValid){
+                return callback({
+                  isValid: isValid,
+                  validatorObject: valObj
+                })
+              });
+
+            });
+
+            promises.push(promise);
+
+          }
         }
 
-        return promises;
+        return Promise.all(promises).then(function(validatorResults){
+          for(var i = 0; i < validatorResults.length; i ++){
+            if (!validatorResults[i].isValid){
+              setValidationResult(validatorResults[i].isValid, validatorResults[i].validatorObject);
+              return false;
+            }
+          }
+
+          setValidationResult(true, validatorResults.validatorObject);
+          return true;
+        });
     }
 
     // Sets the result of the validation, hasError value and errorMessage
-    function setValidationResult(isValid, key){
+    function setValidationResult(isValid, validatorObject){
       if (!isValid) {
-        if (Kavie.validatorFunctions[funcKey].message){
-          var message = Kavie.validatorFunctions[key].message;
-          var propertyValue = ko.unwrap(target.rules[key]); // targe.rules[key] can be an observable
+        if (validatorObject.message){
+          var message = validatorObject.message;
+          var propertyValue = validatorObject.property; // property populated when validator function returned false
           target.errorMessage(message.replace("{propVal}", propertyValue));
         } else {
           target.errorMessage("");
         }
-
         target.hasError(true);
-        return;
 
       } else {
         target.errorMessage("");
         target.hasError(false);
       }
     }
-
-
 
     target.startValidation = function(){
         target.subscription = target.subscribe(validate); // creates a subscribable to update when value changes
