@@ -176,6 +176,7 @@
   });
 
   QUnit.test("Async and Sync Mix", function(assert){
+    Kavie.reset();
     // makse sure isValidAsync also checks validation on sync validators
     var vm = {
       v: ko.observable("true").extend({ kavie: { minLength: 10, asyncBool: 100 } })
@@ -203,6 +204,7 @@
   });
 
   QUnit.test("Section Validator Rules", function(assert){
+    Kavie.reset();
     var vm = {
       v: ko.observable().extend({ kavie: { section: "test", date: true } })
     }
