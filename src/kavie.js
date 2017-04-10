@@ -119,8 +119,9 @@
                     // if section contains its own validation rules
                     if (Object.keys(section.rules).length > 0) {
                         kavieObservables = kavieObservables.map(function(observable) {
-                            observable.rules = ko.utils.extend(observable.rules, section.rules);
-                            return observable;
+                          // add section rules to each observable
+                          observable.rules = ko.utils.extend(observable.rules, section.rules);
+                          return observable;
                         });
                     }
                 }
@@ -143,7 +144,10 @@
 
     var getSection = function(sectionName) {
         // returns a section, if no section of that name exsits, it creates one
-        // we create new sections if they dont exsists because of observables being added to the sections dynamiclly, and asynclly
+
+        // we create new sections if they dont exsists because of observables being
+        // added to the sections dynamiclly, and asynclly
+
         var section = ns.sections[sectionName];
         if (!section) {
             ns.sections[sectionName] = new KavieSection();
@@ -164,7 +168,7 @@
     var isTrue = function(value) {
         // incredebly simple helper function
         // to be used in array.every() processes
-        return value;
+        return !!(value);
     }
 
     // built in validator functions
@@ -329,11 +333,8 @@ function KavieSection() {
     var self = this;
 
     self.observables = [];
-
     self.rules = [];
-
     self.children = {};
-
     self.validate = true; // initially always validate
 }
 

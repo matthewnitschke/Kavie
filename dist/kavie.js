@@ -5,8 +5,7 @@
     Version: 2.2.0
 */
 
-;
-(function(ns) {
+;(function(ns) {
     ns.sections = {};
 
     ns.reset = function() {
@@ -104,8 +103,8 @@
 
                     if (Object.keys(section.rules).length > 0) {
                         kavieObservables = kavieObservables.map(function(observable) {
-                            observable.rules = ko.utils.extend(observable.rules, section.rules);
-                            return observable;
+                          observable.rules = ko.utils.extend(observable.rules, section.rules);
+                          return observable;
                         });
                     }
                 }
@@ -126,6 +125,8 @@
     }
 
     var getSection = function(sectionName) {
+
+
         var section = ns.sections[sectionName];
         if (!section) {
             ns.sections[sectionName] = new KavieSection();
@@ -143,7 +144,7 @@
     }
 
     var isTrue = function(value) {
-        return value;
+        return !!(value);
     }
 
     ns.validatorFunctions = {
@@ -298,11 +299,8 @@ function KavieSection() {
     var self = this;
 
     self.observables = [];
-
     self.rules = [];
-
     self.children = {};
-
     self.validate = true; 
 }
 
