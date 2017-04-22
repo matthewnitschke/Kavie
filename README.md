@@ -50,7 +50,7 @@ You can use a validation message to display to the user if the validation failed
 <input data-bind="textInput: value">
 <div data-bind="text: value.errorMessage"></div>
 ```
-These validation messages are stored on the validators see the Custom Rules section for more information
+These validation messages are stored on the validators see [custom rules](https://github.com/matthewnitschke/Kavie/wiki/Custom-RulesCustom) for more information
 
 # Validation rules
 There are a few validation rules build in
