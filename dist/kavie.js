@@ -6,6 +6,11 @@
 */
 
 ;(function(ns) {
+
+    ns.settings = {
+      subscriptionValidation: true
+    }
+
     ns.sections = {};
 
     ns.reset = function() {
@@ -411,13 +416,17 @@ ko.extenders.kavie = function(target, rules) {
     }
 
     target.startValidation = function() {
+      if (Kavie.settings.subscriptionValidation){
         target.subscription = target.subscribe(validate); 
-        validate(target());
+      }
+      validate(target());
     }
 
     target.startAsyncValidation = function() {
+      if (Kavie.settings.subscriptionValidation){
         target.subscription = target.subscribe(validateAsync);
-        return validateAsync(target());
+      }
+      return validateAsync(target());
     }
 
     target.stopValidation = function() {

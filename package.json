@@ -19,8 +19,7 @@
     "url": "https://github.com/mattNit/Kavie/issues"
   },
   "homepage": "https://github.com/mattNit/Kavie#readme",
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "promise-polyfill": "^6.0.2",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
