@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 2.2.0
+    Version: 2.3.0
 */
 
 ;(function(ns) {
