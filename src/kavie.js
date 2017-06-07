@@ -225,20 +225,15 @@
             return false;
         },
         date: {
-            validator: function(propVal, eleVal) {
-                // change date to accept no preceding 0 on month and day
+           validator: function (propVal, eleVal) {
                 if (propVal && hasValue(eleVal)) {
-                    date = eleVal;
-
-                    // regex matches the patttern of dd/dd/dddd or dd/dd/dd (where d is a digit)
-                    var re = /(\d{2})\/(\d{2})\/((\d{4})|(\d{2}))/;
-                    if (date.search(re) == -1) {
+                    if (!eleVal.match(/^(\d{2})\/(\d{2})\/((\d{4})|(\d{2}))$/)){
                         return false;
                     }
 
+                    date = eleVal;
                     var dt = date.split("/");
 
-                    // month must be less than 13, greater than 0
                     var month = dt[0];
                     if (parseInt(month) > 12 || parseInt(month) < 1) {
                         return false;
@@ -246,7 +241,6 @@
 
                     var year = dt[2];
 
-                    // make sure the day inputed is not greater than the mounth day count
                     var day = dt[1];
                     var daysInMonth = new Date(year, month, 0).getDate();
                     if (parseInt(day) > daysInMonth || parseInt(day) < 1) {
