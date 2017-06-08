@@ -95,6 +95,10 @@
     assert.equal(date(true, "1/60/2012"), false, "invalid day");
     assert.equal(date(true, "1/60/23"), false, "invalid year");
 
+    // tests from bugs found in pr12
+    assert.equal(date(true, "04/23/19999"), false, "invalid year");
+    assert.equal(date(true, "504/23/1999"), false, "invalid year");
+
 
     // true checkss
     assert.equal(date(true, "04/03/1997"), true, "regular date preceding 0 on month and day");
@@ -102,7 +106,7 @@
     assert.equal(date(true, "06/12/3030"), true, "future date");
 
     // msc
-    assert.equal(date(true, ""), true, "empty value")
+    assert.equal(date(true, ""), true, "empty value");
   });
 
   QUnit.test("Birthdate validator function", function( assert ) {
