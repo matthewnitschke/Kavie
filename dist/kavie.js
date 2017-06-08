@@ -2,7 +2,7 @@
     Kavie - knockout observable validator
     Author: Matthew Nitschke
     License: MIT (http://www.opensource.org/licenses/mit-license.php)
-    Version: 2.3.0
+    Version: 2.3.2
 */
 
 ;(function(ns) {
@@ -198,15 +198,14 @@
             return false;
         },
         date: {
-            validator: function(propVal, eleVal) {
+           validator: function (propVal, eleVal) {
                 if (propVal && hasValue(eleVal)) {
-                    date = eleVal;
 
-                    var re = /(\d{2})\/(\d{2})\/((\d{4})|(\d{2}))/;
-                    if (date.search(re) == -1) {
+                    if (!eleVal.match(/^(\d{2})\/(\d{2})\/((\d{4})|(\d{2}))$/)){
                         return false;
                     }
 
+                    date = eleVal;
                     var dt = date.split("/");
 
                     var month = dt[0];
