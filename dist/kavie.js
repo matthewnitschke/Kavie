@@ -66,6 +66,16 @@
     ns.addVariableValidation = function(sectionName, shouldValidate) {
         var section = getSection(sectionName);
         section.validate = shouldValidate;
+
+       if (ko.isObservable(shouldValidate)) {
+            shouldValidate.subscribe(function (newValue) {
+                if (!newValue) {
+                    ko.utils.arrayMap(section.observables, function (observable) {
+                        observable.stopValidation();
+                    });
+                }
+            })
+        }
     }
 
     ns.addSectionChild = function(parentSectionName, childSectionName) {
