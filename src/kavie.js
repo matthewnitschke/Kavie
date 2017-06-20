@@ -77,6 +77,19 @@
     ns.addVariableValidation = function(sectionName, shouldValidate) {
         var section = getSection(sectionName);
         section.validate = shouldValidate;
+
+       if (ko.isObservable(shouldValidate)) {
+            // if the variable validation is set to false, we want to deactivate the validation, as this is the functionality that would be expected
+            shouldValidate.subscribe(function (newValue) {
+                if (!newValue) {
+                    ko.utils.arrayMap(section.observables, function (observable) {
+                        // we cant use the ns.deactivate method because the validation is set to false and compileObservables() will not return the observables we want
+                        // thus we need to stop the validation on the observables directly
+                        observable.stopValidation();
+                    });
+                }
+            })
+        }
     }
 
     ns.addSectionChild = function(parentSectionName, childSectionName) {
