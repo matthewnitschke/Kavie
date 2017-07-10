@@ -34,6 +34,11 @@
 
     vm.v("asdf");
     assert.equal(Kavie.isValid(vm), true);
+
+    var singleObservable = ko.observable().extend({ kavie: { required: true } });
+    assert.equal(Kavie.isValid(singleObservable), false);
+    singleObservable("asdf");
+    assert.equal(Kavie.isValid(singleObservable), true);
   });
 
   QUnit.test("Basic Async", function(assert){

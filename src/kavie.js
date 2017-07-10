@@ -147,15 +147,21 @@
             } else {
                 console.warn("Kavie - No section found with the name: " + data);
             }
-
         } else {
             // data is an object
-            var keys = Object.keys(data);
-            for (var i = 0; i < keys.length; i++) {
-                if (isKavieObservable(data[keys[i]])) {
-                    kavieObservables.push(data[keys[i]]);
-                }
+
+            // check if data is a singular kavie observable or a object of kavie observables
+            if (isKavieObservable(data)){
+              kavieObservables.push(data);
+            } else {
+              var keys = Object.keys(data);
+              for (var i = 0; i < keys.length; i++) {
+                  if (isKavieObservable(data[keys[i]])) {
+                      kavieObservables.push(data[keys[i]]);
+                  }
+              }
             }
+
         }
 
         return kavieObservables;
