@@ -262,6 +262,9 @@
                     }
 
                     var year = dt[2];
+                    if (year == 0000){
+                        return false;
+                    }
 
                      // make sure the day inputed is not greater than the mounth day count
                     var day = dt[1];
