@@ -95,9 +95,14 @@
     assert.equal(date(true, "1/60/2012"), false, "invalid day");
     assert.equal(date(true, "1/60/23"), false, "invalid year");
 
+
     // tests from bugs found in pr12
     assert.equal(date(true, "04/23/19999"), false, "invalid year");
     assert.equal(date(true, "504/23/1999"), false, "invalid year");
+
+    // tests from bugs found in pr13
+    assert.equal(date(true, "1/04/0000"), false, "invalid year");
+    assert.equal(date(true, "1/04/00"), false, "invalid year");
 
 
     // true checkss

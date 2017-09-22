@@ -262,7 +262,7 @@
                     }
 
                     var year = dt[2];
-                    if (year == 0000){
+                    if (parseInt(year) <= 0){
                         return false;
                     }
 
