@@ -229,6 +229,9 @@
                     }
 
                     var year = dt[2];
+                    if (parseInt(year) <= 0){
+                        return false;
+                    }
 
                     var day = dt[1];
                     var daysInMonth = new Date(year, month, 0).getDate();
