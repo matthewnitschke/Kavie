@@ -12,13 +12,13 @@ gulp.task('scripts', function() {
 
     var versionNumber = pJson.version;
 
-    gulp.src(['src/kavie.js', 'node_modules/promise-polyfill/promise.min.js'])
+    gulp.src(['src/kavie.js'])
         .pipe(uglify({ preserveComments: "license" }).on('error', gutil.log))
         .pipe(concat('kavie.min.js'))
         .pipe(inject.replace("{{versionNumber}}", versionNumber))
         .pipe(gulp.dest('dist'));
 
-    gulp.src(['src/kavie.js', 'node_modules/promise-polyfill/promise.min.js'])
+    gulp.src(['src/kavie.js'])
         .pipe(concat('kavie.js'))
         .pipe(strip({ safe: true }))
         .pipe(inject.replace("{{versionNumber}}", versionNumber))

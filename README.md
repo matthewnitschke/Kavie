@@ -14,6 +14,9 @@ Then include it in your project after knockout js
 ```html
 <script src="/path/to/knockout.js"></script>
 <script src="/node_modules/kavie/dist/kavie.js"></script>
+
+<!-- Promise Polyfill for IE11 and Android support (only used with async validation) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
 ```
 
 # Usage

@@ -77,6 +77,19 @@
     ns.addVariableValidation = function(sectionName, shouldValidate) {
         var section = getSection(sectionName);
         section.validate = shouldValidate;
+
+       if (ko.isObservable(shouldValidate)) {
+            // if the variable validation is set to false, we want to deactivate the validation, as this is the functionality that would be expected
+            shouldValidate.subscribe(function (newValue) {
+                if (!newValue) {
+                    ko.utils.arrayMap(section.observables, function (observable) {
+                        // we cant use the ns.deactivate method because the validation is set to false and compileObservables() will not return the observables we want
+                        // thus we need to stop the validation on the observables directly
+                        observable.stopValidation();
+                    });
+                }
+            })
+        }
     }
 
     ns.addSectionChild = function(parentSectionName, childSectionName) {
@@ -134,15 +147,21 @@
             } else {
                 console.warn("Kavie - No section found with the name: " + data);
             }
-
         } else {
             // data is an object
-            var keys = Object.keys(data);
-            for (var i = 0; i < keys.length; i++) {
-                if (isKavieObservable(data[keys[i]])) {
-                    kavieObservables.push(data[keys[i]]);
-                }
+
+            // check if data is a singular kavie observable or a object of kavie observables
+            if (isKavieObservable(data)){
+              kavieObservables.push(data);
+            } else {
+              var keys = Object.keys(data);
+              for (var i = 0; i < keys.length; i++) {
+                  if (isKavieObservable(data[keys[i]])) {
+                      kavieObservables.push(data[keys[i]]);
+                  }
+              }
             }
+
         }
 
         return kavieObservables;
@@ -227,6 +246,8 @@
         date: {
            validator: function (propVal, eleVal) {
                 if (propVal && hasValue(eleVal)) {
+
+                    // regex matches the patttern of dd/dd/dddd or dd/dd/dd (where d is a digit)
                     if (!eleVal.match(/^(\d{2})\/(\d{2})\/((\d{4})|(\d{2}))$/)){
                         return false;
                     }
@@ -234,6 +255,7 @@
                     date = eleVal;
                     var dt = date.split("/");
 
+                    // month must be less than 13, greater than 0
                     var month = dt[0];
                     if (parseInt(month) > 12 || parseInt(month) < 1) {
                         return false;
@@ -241,6 +263,7 @@
 
                     var year = dt[2];
 
+                     // make sure the day inputed is not greater than the mounth day count
                     var day = dt[1];
                     var daysInMonth = new Date(year, month, 0).getDate();
                     if (parseInt(day) > daysInMonth || parseInt(day) < 1) {
