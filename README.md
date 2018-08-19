@@ -1,5 +1,6 @@
 ![capture](https://cloud.githubusercontent.com/assets/6363089/22178397/32213fe4-dff2-11e6-86e5-f60431852bd7.PNG)
 
+[![Build Status](https://travis-ci.org/Knockout-Contrib/Knockout-Validation.svg)](https://travis-ci.org/matthewnitschke/Kavie)
 [![npm version](https://badge.fury.io/js/kavie.svg)](https://badge.fury.io/js/kavie)
 # Kavie
 Kavie is a small and easy to use knockout js validation library.
@@ -17,6 +18,11 @@ Then include it in your project after knockout js
 
 <!-- Promise Polyfill for IE11 and Android support (only used with async validation) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
+```
+it can also be included via node modules
+```js
+var ko = require('ko');
+var Kavie = require('kavie');
 ```
 
 # Usage
