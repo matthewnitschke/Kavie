@@ -22,7 +22,7 @@
         throw new Error('Please load knockout before Kavie');
     }
 
-    // publiclly changeable configuration settings for kavie
+    // publicly changeable configuration settings for kavie
     exports.settings = {
         subscriptionValidation: true
     }
@@ -33,9 +33,9 @@
         exports.sections = {};
     }
 
-    // turn validaton on
+    // turn validation on
     exports.isValid = function (properties) {
-        // propeties can be:
+        // properties can be:
         // self: an object with kavie observables
         // [self, a, foo]: an array of objects with kavie observables
         // "sectionA": a string of the name of a kavie section
@@ -116,7 +116,7 @@
     exports.addSectionValidators = function (sectionName, sectionRules) {
         var section = getSection(sectionName);
 
-        // merge secion.validators and sectionValidators objects
+        // merge section.validators and sectionValidators objects
         section.rules = ko.utils.extend(section.rules, sectionRules);
     }
 
@@ -129,7 +129,7 @@
         var kavieObservables = [];
 
         if (Array.isArray(data)) {
-            // if data is an array, recursivlly compile each array item
+            // if data is an array, recursively compile each array item
             for (var i = 0; i < data.length; i++) {
                 kavieObservables = kavieObservables.concat(compileObservables(data[i]));
             }
@@ -143,7 +143,7 @@
                     var childrenKeys = Object.keys(section.children);
 
                     for (var i = 0; i < childrenKeys.length; i++) {
-                        // recursivelly compile all children's observables
+                        // recursively compile all children's observables
                         kavieObservables = kavieObservables.concat(compileObservables(childrenKeys[i]));
                     }
 
@@ -182,10 +182,10 @@
     }
 
     var getSection = function (sectionName) {
-        // returns a section, if no section of that name exsits, it creates one
+        // returns a section, if no section of that name exists, it creates one
 
-        // we create new sections if they dont exsists because of observables being
-        // added to the sections dynamiclly, and asynclly
+        // we create new sections if they don't exists because of observables being
+        // added to the sections dynamically, and asynchronously
 
         var section = exports.sections[sectionName];
         if (!section) {
@@ -205,7 +205,7 @@
     }
 
     var isTrue = function (value) {
-        // incredebly simple helper function
+        // incredibly simple helper function
         // to be used in array.every() processes
         return !!(value);
     }
@@ -261,7 +261,7 @@
             validator: function (propVal, eleVal) {
                 if (propVal && hasValue(eleVal)) {
 
-                    // regex matches the patttern of dd/dd/dddd or dd/dd/dd (where d is a digit)
+                    // regex matches the pattern of dd/dd/dddd or dd/dd/dd (where d is a digit)
                     if (!eleVal.match(/^(\d{2})\/(\d{2})\/((\d{4})|(\d{2}))$/)) {
                         return false;
                     }
@@ -311,7 +311,7 @@
 
                     // check to see if date is a rational birthdate
                     var minDateAllowed = new Date();
-                    minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); // 120 is age of oldest person allowd
+                    minDateAllowed.setFullYear(minDateAllowed.getFullYear() - 120); // 120 is age of oldest person allowed
 
                     if (date < minDateAllowed) {
                         return false;
@@ -359,12 +359,12 @@
 
     // exists for legacy reasons. [3/26/2017]
     exports.isSectionValid = function (sectionName) {
-        console.warn("isSectionValid is depricated and will be removed in the next release. Please use isValid('sectionName') instead");
+        console.warn("isSectionValid is deprecated and will be removed in the next release. Please use isValid('sectionName') instead");
         return exports.isValid(sectionName);
     }
 
     exports.isSectionValidAsync = function (sectionName) {
-        console.warn("isSectionValidAsync is depricated and will be removed in the next release. Please use isValidAsync('sectionName') instead");
+        console.warn("isSectionValidAsync is deprecated and will be removed in the next release. Please use isValidAsync('sectionName') instead");
         return exports.isValidAsync(sectionName);
     }
 
@@ -383,7 +383,7 @@
         target.hasError = ko.observable(); // tracks whether this observable is valid or not
         target.errorMessage = ko.observable();
 
-        // if section exsists add observable to it
+        // if section exists add observable to it
         if (rules.section) {
             if (!exports.sections[rules.section]) {
                 exports.sections[rules.section] = new KavieSection();
