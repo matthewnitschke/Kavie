@@ -1,12 +1,11 @@
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
-var rename = require('gulp-rename');
-var strip = require('gulp-strip-comments');
+const gulp = require('gulp');
+const gutil = require('gulp-util');
+const uglify = require('gulp-uglify');
+const concat = require('gulp-concat');
+const strip = require('gulp-strip-comments');
 
-var pJson = require("./package.json");
-var inject = require("gulp-inject-string");
+const pJson = require("./package.json");
+const inject = require("gulp-inject-string");
 
 gulp.task('scripts', function() {
 
@@ -25,7 +24,7 @@ gulp.task('scripts', function() {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('watch', function(){
+gulp.task('watch', function() {
   gulp.watch("src/kavie.js", ['scripts'])
 })
 
